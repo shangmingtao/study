@@ -63,8 +63,93 @@ git rm (删除的暂存区和物理路径下的文件) D(绿色)_ 代表缓存区和物理路径删除了.可以
 rm(删除的是w物理路径) _D(红色) 代表物理路径删了(即工作区删了),但是缓存区和仓库都没有删.所以要先add再commit才能删掉
 一个文件已经提交到了仓库,修改这个文件 _M(红色) 代表了从工作区到缓存区修改了.(modify)
 
-git一栋
-git mv (是在暂存区和物理路径下移动) R(绿色)_ 代表缓存区和物理路径都一栋了,可以再次执行commit
+git移动
+git mv (是在暂存区和物理路径下移动) R(绿色)_ 代表缓存区和物理路径都移动了,可以再次执行commit
+mv (暂存区不动) a的status： _D(红色) b的status：？？此时把两个文件都add执行git status命令结果为：R（正常颜色）_ b-》a，然后commit后。commit结果为rename a=》b 证明git并不是用文件名存储的，而是存储的文件内容
+
+创建文件夹是不会被跟踪的，里边有文件了才会被跟踪
+
+分块添加：git add -P 
+【y，n，q，a，d，/，s，e，？】
+y：yes
+n：no
+q：quit
+s：split分割
+e：手工编辑
+d：退出s
+选择s选择两部分（共计三部分）后查看git status 提示：M（绿色）M（红色）
+工作区和暂存区的比对：git diff 
+暂存区和本地仓库比对：git diff —cached
+
+最后一次提交详情：git show Head
+倒数第二个提交详情：git show Head&^ 
+
+commit message的书写规范：每一行不能超过72个字符
+<type>(<scope>):<subject>
+//空行
+<body>
+//空行
+<footer>
+
+feat:新功能（feature）
+fix：修复bug
+docs：文档
+style：格式
+refactor：重构
+test：增加测试
+chore：构建过程或辅助工具变动
+
+
+简要信息：git status -sb
+查看某个提交信息：git show HEAD(这里也可以是hash，或者HEAD指针 HEAD~3)
+查看提交历史：git log <file name>
+	   git log —grep <msg>
+	   git log -n
+
+
+版本库中的两个版本的差异：git diff da985 b325dc
+暂存区和版本库的差异：git diff —-cached (这个后边也可以加HEAD~4或者<tag name>这些东西)
+暂存区和工作区的差异：git diff
+工作区和版本库的差异：git diff HEAD
+工作区和版本库历史版本差异：git diff da985
+工作区和某个tag的差异：git diff <tag name>
+
+回撤操作：
+回撤暂存区内容到工作目录：git reset HEAD
+回撤提交到暂存区：git reset HEAD —-soft
+回撤提交，放弃变更：git reset HEAD —-hard
+回撤远程仓库：git push -f（—- force）
+回撤上一次提交（只能回撤一次）：git commit —-amend -m “message”
+变基操作，改写历史提交：git rebase -i HEAD~3
+
+soft:git reset --soft HEAD～1 意为将版本库软回退1个版本，所谓软回退表示将本地版本库的头指针全部重置到指定版本，且将这次提交之后的所有变更都移动到暂存区
+mixed(default):git reset HEAD～1 意为将版本库回退1个版本，将本地版本库的头指针全部重置到指定版本，且会重置暂存区，即这次提交之后的所有变更都移动到未暂存阶段
+hard:git reset --hard HEAD～1 意为将版本库回退1个版本，但是不仅仅是将本地版本库的头指针全部重置到指定版本，也会重置暂存区，并且会将工作区代码也回退到这个版本 
+PS:soft->mixed->hard着重强调了级别，soft仅回退版本库，mixed回退版本库+暂存区，hard回退版本库+暂存区+工作区   
+
+
+tag（标签）操作
+打标签：git tag foo -m <msg>
+在当前版本4个版本上打标签 ： git tag foo HEAD~4
+列出标签： git tag
+删除标签：git tag -d  <tag name>
+把标签推到远程：git push origin —tags (正常的push是不会吧tag推上去的)
+	     git push origin v0.1
+删除远程标签：git push origin :refs/tags/v0.0
+
+git分支操作：
+新建分支：git branch iss53
+切换分支：git checkout <分支名字>
+分支列表：git branch
+合并：git merge <要合并的分支>（要切换到合并目标分支）
+删除分支：git branch -d hotfix
+查看分支详情： git branch -v （会打印现在HEAD）
+冲突提示 ：CONFLICT (content): Merge conflict in a （证明冲突在a上）
+冲突提示：或者我们通过git status查看 U（红色）U（红色）
+
+ 
+
+
 
 
 
