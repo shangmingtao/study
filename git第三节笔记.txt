@@ -1,0 +1,74 @@
+第一节回顾:
+两种方式第一次从远程仓库同步本地:第一种当github上已经有非空仓库的时候clone. 第二种github有空仓库,直接在本地memote add后push上去
+git remote add [shortname(origin)] [url(不带.git)]
+git clone [rul(不带.git)]
+git push [remote(origin)] [branch(本地master)]
+git pull [remote(origin)] [branch(本地master)]
+git pull <远程主机名> <远程分支名>:<本地分支名>
+clone和pull的区别:clone的目标文件夹必须是一个空文件夹,pull不是.一般第一次从远程仓库拉的时候用clone.
+
+
+第三节回顾:
+.gitignore说明 : 
+.project #忽略一个文件
+*.obj #忽略obj类型的文件
+*.class #忽略class类型的文件
+
+github给我们提供了很多.gitignore模板
+
+查看.project是被哪里ignore的:git check-ignore -v .project
+
+
+换行:
+CR:carriage return 回车,光标到首行 ,'\r' = return
+LF:line feed 换行 ,光标下移一行 , '\n'= newline
+linux:换行 \n
+windows:换行 \r\n
+mac: \r
+
+打印配置信息
+git config --list
+提交时转换为LF,检出的时候转换为CRLF,默认设置不用修改,git是linux配置
+git config --global core.autocrlf true
+不打印:
+{warning: LF will be replaced by CRLF in a.
+The file will have its original line endings in your working directory.
+}
+git config --global core.safecrlf false
+
+
+git log在一行:git log --oneline
+以图形方式打印log(没有成功) : git log --pretty=format: '%h %ad | %s%d [%an]' --graph --date=short
+设置别名:git config --global alias.ci commit
+存储凭证(没有试):git config --blobal credential.helper wincred
+
+SSH协议要配置密钥对:
+生成RSA密钥对(邮箱是github的邮箱) : $ ssh-Keygen -t rsa -C "shangmingtao@126.com"    
+
+git命令(进阶):
+打印所有git子命令: git help -a
+
+逐行查看文件修改历史:git blame <file name>
+从第100行开始到110行: git blame -L 100,110 <file name>
+
+罗列出没放到暂存区的文件:git clean -n
+把前一条罗列的删除掉:git clean -f
+把前一条罗列的删除掉(连ignore中忽略也删除):git clean -x -f
+
+简短打出git status : git status -sb
+
+
+git删除:
+git rm (删除的暂存区和物理路径下的文件) D(绿色)_ 代表缓存区和物理路径删除了.可以再次执行commit
+rm(删除的是w物理路径) _D(红色) 代表物理路径删了(即工作区删了),但是缓存区和仓库都没有删.所以要先add再commit才能删掉
+一个文件已经提交到了仓库,修改这个文件 _M(红色) 代表了从工作区到缓存区修改了.(modify)
+
+git一栋
+git mv (是在暂存区和物理路径下移动) R(绿色)_ 代表缓存区和物理路径都一栋了,可以再次执行commit
+
+
+
+
+
+
+
