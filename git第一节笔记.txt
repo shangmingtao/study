@@ -1,0 +1,36 @@
+设置用户名：git config --global user.name "shangmingtao" 
+设置邮箱：git config --global user.email "shangmingtao@126.com"
+
+上翻页：ctrl+u
+退出 ： ：q
+最上： gg
+最下： ：G
+查询： n u（查询向上和向下）
+上一行：j
+下一行：k
+查看隐藏：ls -a
+
+新建仓库 git init
+下载 git clone [url]
+[url]
+放进暂存区：git add [file1] [file2]
+删除：git rm [file] [file2]
+移动：git mv [file-origin] [file]
+从暂存区到仓库：git commit -m [message]
+从工作区到仓库：git commit -a -m [message]
+状态：git status
+历史版本：git log
+	git log —oneline
+查看某次提交详细信息 git show [hash值]
+
+
+增加远程仓库 git remote add [shortname] [url]
+推送到远程仓库 git push [remote] [branch]
+远程仓库拉到本地 ： git pull [remote] [branch]
+查看远程仓库列表 git remote -v
+
+add所有没有add的 ： git .
+
+
+
+ 教程地址 http://edu.51cto.com/center/course/lesson/index?id=149128
