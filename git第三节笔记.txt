@@ -134,8 +134,10 @@ tag（标签）操作
 列出标签： git tag
 删除标签：git tag -d  <tag name>
 把标签推到远程：git push origin —tags (正常的push是不会吧tag推上去的)
-	     git push origin v0.1
-删除远程标签：git push origin :refs/tags/v0.0
+	     git push origin v0.1 (单个push)
+把标签从远程拉回本地：git pull origin —tags (git fetch origin --tags 和这个pull好像是一样的.不需要merge)
+删除远程标签：git push origin :refs/tags/v0.0 (这个命令不影响本地标签,所以如果想同步标签可以先删除本地所有标签,然后把远程的都拽下来) 
+
 
 git分支操作：
 新建分支：git branch iss53
@@ -146,6 +148,20 @@ git分支操作：
 查看分支详情： git branch -v （会打印现在HEAD）
 冲突提示 ：CONFLICT (content): Merge conflict in a （证明冲突在a上）
 冲突提示：或者我们通过git status查看 U（红色）U（红色）
+
+远程:
+获取远程分支和tags列表:git ls-remote
+
+# 保存进度
+git stash
+# 弹出进度
+git stash pop
+# 查看 stash 列表
+git stash list
+# 删除 stash 列表
+git stash clear
+
+不管是git fetch还是git pull都要求工作区和缓存区不能有东西.需要先保存进度.当用fetch的时候会包远程保存在一个origin/dev的分支中.然后需要切换到dev分支把origin/dev分支merge进来.并且这个origin/dev的分支在本地分支列表中是看不到的.
 
  
 
