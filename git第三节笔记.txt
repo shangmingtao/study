@@ -7,6 +7,13 @@ git pull [remote(origin)] [branch(本地master)]
 git pull <远程主机名> <远程分支名>:<本地分支名>
 clone和pull的区别:clone的目标文件夹必须是一个空文件夹,pull不是.一般第一次从远程仓库拉的时候用clone.
 
+*重要* chone仅会把所有分支clone下来,同时会把所有tag clone下来，通过git branch -a查看所有分支，可以看到remote/origin/。。分支。如果第一次clone下来以后想同步远程分支（非master，master分支在clone时候已经自动追踪了）也建一个本地分支。可以通过git checkout先进到存在本地的远程分支里，然后git checkout -b <新的分支名字> 或者通过git checkout -b <新的分支名字> <目标分支名字 ， 如origin/dev>
+
+*重要* fetch这个命令更新所有远程仓库，拉取所有标签
+           fetch <仓库名> 仅更新这个仓库，不拉取标签
+           fetch <仓库名> —tags 仅更新这个仓库，拉取标签
+
+
 
 第三节回顾:
 .gitignore说明 : 
@@ -132,11 +139,13 @@ tag（标签）操作
 打标签：git tag foo -m <msg>
 在当前版本4个版本上打标签 ： git tag foo HEAD~4
 列出标签： git tag
-删除标签：git tag -d  <tag name>
+删除标签：git tag -d  <tag name> （没merge过的分支要用下边的-D删除）
+	git tag -D  <tag name> 
 把标签推到远程：git push origin —tags (正常的push是不会吧tag推上去的)
 	     git push origin v0.1 (单个push)
 把标签从远程拉回本地：git pull origin —tags (git fetch origin --tags 和这个pull好像是一样的.不需要merge)
 删除远程标签：git push origin :refs/tags/v0.0 (这个命令不影响本地标签,所以如果想同步标签可以先删除本地所有标签,然后把远程的都拽下来) 
+查看标签详情：git show <tag name>
 
 
 git分支操作：
@@ -160,6 +169,13 @@ git stash pop
 git stash list
 # 删除 stash 列表
 git stash clear
+
+*重要*： git stash -u 代表工作区未追踪的也会保存
+            git stash pop —index 代表缓存区的也会恢复
+        git stash apply 不删除stash
+apply和pop均不允许在本地放生改变时执行。必须解决好冲突
+
+
 
 不管是git fetch还是git pull都要求工作区和缓存区不能有东西.需要先保存进度.当用fetch的时候会包远程保存在一个origin/dev的分支中.然后需要切换到dev分支把origin/dev分支merge进来.并且这个origin/dev的分支在本地分支列表中是看不到的.
 

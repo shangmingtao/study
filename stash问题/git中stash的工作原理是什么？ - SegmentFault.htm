@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<!-- saved from url=(0043)https://segmentfault.com/q/1010000007679514 -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"><meta name="renderer" content="webkit"><meta property="qc:admins" content="15317273575564615446375"><meta property="og:image" content="https://static.segmentfault.com/v-59a5362f/global/img/touch-icon.png"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="alexaVerifyID" content="LkzCRJ7rPEUwt6fVey2vhxiw1vQ"><meta name="apple-itunes-app" content="app-id=958101793, app-argument="><title>git中stash的工作原理是什么？ - SegmentFault</title><meta name="description" content="1.测试场景一：假设index.html本来就在代码仓库中，现在修改了index.html页面，然后add暂存index.html页面，接着继续修改index.html页面，然后git stash，这个时候代码仓库干净了，修改被暂存，然后执行git stash..."><meta name="keywords" content="git"><link rel="search" type="application/opensearchdescription+xml" href="https://segmentfault.com/opensearch.xml" title="SegmentFault"><link rel="shortcut icon" href="https://static.segmentfault.com/v-59a5362f/global/img/favicon.ico"><link rel="apple-touch-icon" href="https://static.segmentfault.com/v-59a5362f/global/img/touch-icon.png"><meta name="msapplication-TileColor" content="#009a61"><meta name="msapplication-square150x150logo" content="https://static.segmentfault.com/v-59a5362f/global/img/touch-icon.png"><meta name="userId" value="1030000010984382" id="SFUserId"><meta name="userRank" value="1" id="SFUserRank"><link rel="alternate" type="application/atom+xml" title="SegmentFault 最新问题" href="https://segmentfault.com/feeds/questions"><link rel="alternate" type="application/atom+xml" title="SegmentFault 最新文章" href="https://segmentfault.com/feeds/blogs"><link rel="stylesheet" href="./git中stash的工作原理是什么？ - SegmentFault_files/global.css"><link rel="stylesheet" href="./git中stash的工作原理是什么？ - SegmentFault_files/qa.css"><link rel="stylesheet" href="./git中stash的工作原理是什么？ - SegmentFault_files/responsive.css"><script src="./git中stash的工作原理是什么？ - SegmentFault_files/ca-pub-6330872677300335.js"></script><script type="text/javascript" async="" id="ac_js86_$8035269882" src="./git中stash的工作原理是什么？ - SegmentFault_files/r.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="https://static.segmentfault.com/v-59a5362f/3rd/socket/socket.io.js" src="./git中stash的工作原理是什么？ - SegmentFault_files/socket.io.js"></script></head><body data-mod="qa" class="qa-question  have-notify"><!--[if lt IE 9]><div class="alert alert-danger topframe" role="alert">你的浏览器实在<strong>太太太太太太旧了</strong>，放学别走，升级完浏览器再说 <a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div><![endif]--><img id="icon4weChat" style="height: 0;width: 0;" data-src="https://static.segmentfault.com/v-59a5362f/global/img/touch-icon-512.png"><div class="alert alert-warning topframe" role="alert">答案已进入众审中心
+        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button></div><div class="global-nav sf-header sf-header--index"><nav class="container nav"><div class="visible-xs header-response"><a href="https://segmentfault.com/search" style="display:block"><i class="fa fa-search" aria-hidden="true"></i></a><div class="sf-header__logo sf-header__logo--response"><h1><a href="https://segmentfault.com/" style="height:24px; background-size: auto 24px;"></a></h1></div><div class="opts"><li class="opts__item user dropdown hoverDropdown"><a class="dropdownBtn user-avatar" data-toggle="dropdown" style="background-image: url(&#39;https://static.segmentfault.com/v-59a5362f/global/img/user-64.png&#39;);" href="https://segmentfault.com/u/milo_59aae0cc1ef10"></a><ul class="dropdown-menu dropdown-menu-right"><li class="message-response visible-xs"><a href="https://segmentfault.com/user/notifications" id="messageCount-response">通知提醒</a></li><li class="letter-response  visible-xs"><a href="https://segmentfault.com/user/messages" id="letterCount-response">私信消息</a></li><li class="divider visible-xs"></li><li><a href="https://segmentfault.com/u/milo_59aae0cc1ef10">我的主页</a></li><li><a href="https://segmentfault.com/u/milo_59aae0cc1ef10/about">我的档案</a></li><li><a href="https://segmentfault.com/user/finance">我的资产</a></li><li><a href="https://segmentfault.com/user/settings">账号设置</a></li><li><a href="https://segmentfault.com/api/user/logout?_=63393df574e6802820be9cccac36a1d6">退出</a></li><li class="divider"></li><li><a href="https://segmentfault.com/">返回主页</a></li><li><a href="https://segmentfault.com/g/1570000009280187">建议反馈</a></li><li><a class="js__action--complain" href="javascript:void(0);">用户申诉</a></li><script src="./git中stash的工作原理是什么？ - SegmentFault_files/hm.js"></script><script async="" src="./git中stash的工作原理是什么？ - SegmentFault_files/analytics.js"></script><script type="text/template" id="js__action--complain-tpl"><form class="complain__form" method="post" action="/api/appeals/add"><div class="form-group"><label>理由</label><textarea name="description" class="form-control"
+                                                              rows="3"></textarea></div></form></script></ul></li><li class="opts__item dropdown hoverDropdown write-btns mt0"><a class="dropdownBtn" data-toggle="dropdown" href="https://segmentfault.com/ask"><i class="fa fa-plus" aria-hidden="true" style="margin-top: 7px"></i></a><ul class="dropdown-menu dropdown-menu-right "><li><a href="https://segmentfault.com/ask">提问题</a></li><li><a href="https://segmentfault.com/submit">发头条</a></li><li><a href="https://segmentfault.com/write">写文章</a></li><li><a href="https://segmentfault.com/record">记笔记</a></li><li class="divider"></li><li><a href="https://segmentfault.com/user/draft">草稿箱</a></li></ul></li></div><div class="bottom-nav"><div class="opts"><a class="opts-group active" href="https://segmentfault.com/questions"><i class="fa fa-comments" aria-hidden="true"></i><span>问答</span></a><a class="opts-group " href="https://segmentfault.com/news"><i class="fa fa-newspaper-o" aria-hidden="true"></i><span>头条</span></a><a class="opts-group " href="https://segmentfault.com/blogs"><i class="fa fa-pencil-square" aria-hidden="true"></i><span>专栏</span></a><a class="opts-group " href="https://segmentfault.com/lives"><i class="fa fa-play-circle" aria-hidden="true"></i><span>讲堂</span></a><div class="opts-group"><div class="btn-group dropup"><i class="fa fa-bars dropdown hoverDropdown" data-toggle="dropdown" aria-hidden="true"><span>更多</span></i><ul class="dropdown-menu"><li><a href="https://segmentfault.com/jobs">职位</a></li><li><a href="https://segmentfault.com/events">活动</a></li><li><a href="https://segmentfault.com/tags">标签</a></li><li><a href="https://segmentfault.com/badges">徽章</a></li></ul></div></div></div></div></div><div class="row hidden-xs"><div class="col-sm-8 col-md-9 col-lg-9"><div class="sf-header__logo"><h1><a href="https://segmentfault.com/">SegmentFault</a></h1></div><div><ul class="menu list-inline pull-left hidden-xs"><li class="menu__item"><a href="https://segmentfault.com/questions" class="active-nav">问答</a></li><li class="menu__item"><a href="https://segmentfault.com/news" class="">头条</a></li><li class="menu__item"><a href="https://segmentfault.com/blogs" class="">专栏</a></li><li class="menu__item"><a href="https://segmentfault.com/lives" class="">讲堂</a></li><li class="menu__item"><a href="https://segmentfault.com/jobs" class="">职位</a></li><li class="menu__item"><a href="https://segmentfault.com/events" class="">活动</a></li><li class="menu__item visible-sm-inline-block"><a href="https://segmentfault.com/search"><span class="glyphicon glyphicon-search" style="vertical-align: middle;"></span></a></li></ul><form action="https://segmentfault.com/search" class="header-search  hidden-sm hidden-xs pull-right"><button class="btn btn-link"><span class="sr-only">搜索</span><span class="glyphicon glyphicon-search"></span></button><input id="searchBox" name="q" type="text" placeholder="搜索问题或关键字" class="form-control" value=""></form></div></div><div class="col-sm-4 col-md-3 col-lg-3 text-right"><ul class="opts list-inline hidden-xs"><li class="opts__item dropdown hoverDropdown write-btns visible-lg-inline-block"><div class="btn-group"><button type="button" class="btn btn-primary " id="shuldGoTo" data-type="qa">
+                                                                                        提问题
+                                                                                    </button><button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="caret"></span><span class="sr-only">显示下拉菜单</span></button><ul class="dropdown-menu"><li><a href="https://segmentfault.com/ask">提问题</a></li><li><a href="https://segmentfault.com/submit">发头条</a></li><li><a href="https://segmentfault.com/write">写文章</a></li><li><a href="https://segmentfault.com/record">记笔记</a></li><li role="separator" class="divider"></li><li><a href="https://segmentfault.com/user/draft">草稿箱</a></li></ul></div></li><li class="opts__item dropdown hoverDropdown write-btns visible-md-inline-block"><a class="dropdownBtn" data-toggle="dropdown" href="https://segmentfault.com/ask"><i class="fa fa-plus" aria-hidden="true"></i></a><ul class="dropdown-menu dropdown-menu-right "><li><a href="https://segmentfault.com/ask">提问题</a></li><li><a href="https://segmentfault.com/submit">发头条</a></li><li><a href="https://segmentfault.com/write">写文章</a></li><li><a href="https://segmentfault.com/record">记笔记</a></li><li class="divider"></li><li><a href="https://segmentfault.com/user/draft">草稿箱</a></li></ul></li><li class="opts__item message has-unread hidden-sm ml10"><a id="dLabel" class="dropdown-toggle-message" href="https://segmentfault.com/user/notifications"><span class="sr-only">消息</span><span id="messageCount" class="fa fa-bell-o"></span></a><div class="opts__item--message hide"><div class="panel panel-default"><div class="panel-heading"><ul class="nav nav-tabs nav-tabs-message"><li role="presentation" class="active"><a href="https://segmentfault.com/q/1010000007679514#messageGeneral" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true"><i class="fa fa-bullhorn"></i><span class="notice-dot hide notice-dot-general"></span></a></li><li role="presentation" class=""><a href="https://segmentfault.com/q/1010000007679514#messageRanked" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true"><i class="fa fa-thumbs-o-up"></i><span class="notice-dot hide notice-dot-ranked"></span></a></li><li role="presentation" class=""><a href="https://segmentfault.com/q/1010000007679514#messageFollowed" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true"><i class="fa fa-user-plus"></i><span class="notice-dot hide notice-dot-followed"></span></a></li></ul></div><div class="panel-body"><div class="tab-content"><div role="tabpanel" class="tab-pane active" id="messageGeneral"></div><div role="tabpanel" class="tab-pane" id="messageRanked"></div><div role="tabpanel" class="tab-pane" id="messageFollowed"></div><script type="text/template" id="messageGeneralTpl"><ul class="mCustomScrollbar-message" data-proto="general"  data-mcs-theme="minimal-dark"><% _.each(general,function(d){ %><li class="<%= d.viewed>0 ?'':'bg-warning'%>"><%= d.sentence %>&nbsp;<a
+                                    href="<%= d.url %>"><%= d.excerpt %></a>&nbsp<%= d.appendSentence %></li><% }) %></ul></script><script type="text/template" id="item--general"><% _.each(general,function(d){ %><li class="<%= d.viewed>0 ?'':'bg-warning'%>"><%= d.sentence %>&nbsp;<a
+                                    href="<%= d.url %>"><%= d.excerpt %></a></li><% }) %></script><script type="text/template" id="messageRankedTpl"><ul class="mCustomScrollbar-message" data-proto="ranked"  data-mcs-theme="minimal-dark"><% _.each(ranked,function(d){ %><li class="<%= d.viewed>0 ?'':'bg-warning'%>"><span class="badge
+                                                    <% if(d.voted && d.voted.rank!=0){ %><%= d.voted.rank > 0 ? 'green':'red' %><% } else { %> transparent <% } %>"><% if(d.voted){ %><%= d.voted.rank > 0 ? '+'+d.voted.rank:d.voted.rank %><% } %></span><div class="rank-desc"><%= d.sentence %>&nbsp;<a href="<%= d.url %>"><%=
+                                    d.excerpt %></a></div></li><% }) %></ul></script><script type="text/template" id="item--ranked"><% _.each(ranked,function(d){ %><li class="<%= d.viewed>0 ?'':'bg-warning'%>"><span class="badge
+                                                    <% if(d.voted && d.voted.rank!=0){ %><%= d.voted.rank > 0 ? 'green':'red' %><% } else { %> transparent <% } %>"><% if(d.voted){ %><%= d.voted.rank > 0 ? '+'+d.voted.rank:d.voted.rank %><% } %></span><div class="rank-desc"><%= d.sentence %>&nbsp;<a href="<%= d.url %>"><%=
+                                    d.excerpt %></a></div></li><% }) %></script><script type="text/template" id="messageFollowedTpl"><ul class="mCustomScrollbar-message" data-proto="followed"  data-mcs-theme="minimal-dark"><p class="follow-tips">他们最近关注了你</p><% _.each(followed,function(d){ %><li class="<%= d.viewed>0 ?'':'bg-warning'%>"><img class="follower__img avatar-32"
+                                 src="<%= d.triggerUser[0] ? d.triggerUser[0].avatarUrl : '' %>"><div class="follower__info"><% if(d.triggerUser[0] ? d.triggerUser[0].isFollowed : ''){ %><button data-id="<%= d.triggerUser[0] ? d.triggerUser[0].id : '' %>"
+                                        class="btn btn-default btn-xs message__btn--unfollow pull-right active">
+                                    已关注
+                                </button><% }else{ %><button data-id="<%= d.triggerUser[0] ? d.triggerUser[0].id : '' %>"
+                                        class="btn btn-default btn-xs message__btn--follow pull-right">
+                                    关注
+                                </button><% } %><a href="<%= d.triggerUser[0] ? d.triggerUser[0].url : '' %>"><%=d.triggerUser[0] ? d.triggerUser[0].name : ''%></a><br><span><%= d.triggerUser[0] ? d.triggerUser[0].rank : '' %> 声望</span></div></li><% }) %></ul></script><script type="text/template" id="item--followed"><% _.each(followed,function(d){ %><li class="<%= d.viewed>0 ?'':'bg-warning'%>"><img class="follower__img avatar-32"
+                                 src="<%= d.triggerUser[0] ? d.triggerUser[0].avatarUrl : '' %>"><div class="follower__info"><% if(d.triggerUser[0] && d.triggerUser[0].isFollowed){ %><button data-id="<%= d.triggerUser[0] ? d.triggerUser[0].id : '' %>"
+                                        class="btn btn-default btn-xs message__btn--unfollow pull-right active">
+                                    已关注
+                                </button><% }else{ %><button data-id="<%= d.triggerUser[0] ? d.triggerUser[0].id : '' %>"
+                                        class="btn btn-default btn-xs message__btn--follow pull-right">
+                                    关注
+                                </button><% } %><a href="<%= d.triggerUser[0] ? d.triggerUser[0].url : '' %>"><%= d.triggerUser[0].name
+                                    %></a><br><span><%= d.triggerUser[0].rank %> 声望</span></div></li><% }) %></script></div><p class="opts__item--message-loading follow-tips">loading</p></div><div class="panel-footer"><div class="row"><div class="col-sm-6"><a href="javascript:;" class="message-ingore-all hide"><span class="glyphicon glyphicon-ok-sign"></span>
+                        全部标记为已读</a></div><div class="col-sm-6"><a class="opts__item--message-view-all" href="https://segmentfault.com/user/notifications">查看全部
+                        »</a></div></div></div></div></div></li><li class="opts__item letter has-unread hidden-sm"><a id="dLabel" class="dropdown-toggle-letter" href="https://segmentfault.com/user/messages"><span class="sr-only">私信</span><span id="letterCount" class="fa fa-envelope-o"></span></a><div class="opts__item--letter hide"><div class="panel panel-default"><div class="panel-heading"><ul class="nav nav-tabs nav-tabs-letter"><li role="presentation" class="active"><span class="opts__item--letter-heading">最近的私信</span></li></ul></div><div class="panel-body"><div class="tab-content"><div id="messageInbox"></div><script type="text/template" id="messageInboxTpl"><ul class="mCustomScrollbar-message" data-proto="inbox" data-mcs-theme="minimal-dark"><% _.each(inboxes,function(d){ %><li class="<%= d.viewed>0 ?'':'bg-warning'%>" data-click="<%= d.url %>"><img class="follower__img avatar-32"
+                                     src="<%= d.targetUser.avatarUrl %>"><div class="follower__info"><a href="<%= d.url %>"><%= d.targetUser.name
+                                        %></a><br><% if (d.lastMessage.content){ %><span class="ellipsis inline-block" style="width: 245px;"><%= d.lastMessage.content.content %></span><% } %></div></li><% }) %><% if(inboxes.length ==0){ %><p class="text-center">没有人给你发私信</p><% } %></ul></script><script type="text/template" id="item--inboxes"><% _.each(inboxes,function(d){ %><li class="<%= d.viewed>0 ?'':'bg-warning'%>" data-click="<%= d.url %>"><img class="follower__img avatar-32"
+                                     src="<%= d.targetUser.avatarUrl %>"><div class="follower__info"><a href="<%= d.targetUser.url %>"><%= d.targetUser.name
+                                        %></a><br><span class="ellipsis inline-block" style="width: 245px;"><%= d.content %></span></div></li><% }) %></script></div><p class="opts__item--letter-loading follow-tips">loading</p></div><div class="panel-footer"><div class="row"><div class="col-sm-6"><a href="javascript:;" class="message-ingore-all hide"><span class="glyphicon glyphicon-ok-sign"></span>
+                        全部标记为已读</a></div><div class="col-sm-6"><a class="opts__item--message-view-all" href="https://segmentfault.com/user/messages">查看全部
+                        »</a></div></div></div></div></div></li><li class="opts__item user dropdown hoverDropdown ml0"><a class="dropdownBtn user-avatar" data-toggle="dropdown" style="background-image: url(&#39;https://static.segmentfault.com/v-59a5362f/global/img/user-64.png&#39;)" href="https://segmentfault.com/u/milo_59aae0cc1ef10"></a><ul class="dropdown-menu dropdown-menu-right"><li class="message-response visible-xs"><a href="https://segmentfault.com/user/notifications" id="messageCount-response">通知提醒</a></li><li class="letter-response  visible-xs"><a href="https://segmentfault.com/user/messages" id="letterCount-response">私信消息</a></li><li class="divider visible-xs"></li><li><a href="https://segmentfault.com/u/milo_59aae0cc1ef10">我的主页</a></li><li><a href="https://segmentfault.com/u/milo_59aae0cc1ef10/about">我的档案</a></li><li><a href="https://segmentfault.com/user/finance">我的资产</a></li><li><a href="https://segmentfault.com/user/settings">账号设置</a></li><li><a href="https://segmentfault.com/api/user/logout?_=63393df574e6802820be9cccac36a1d6">退出</a></li><li class="divider"></li><li><a href="https://segmentfault.com/">返回主页</a></li><li><a href="https://segmentfault.com/g/1570000009280187">建议反馈</a></li><li><a class="js__action--complain" href="javascript:void(0);">用户申诉</a></li><script type="text/template" id="js__action--complain-tpl"><form class="complain__form" method="post" action="/api/appeals/add"><div class="form-group"><label>理由</label><textarea name="description" class="form-control"
+                                                              rows="3"></textarea></div></form></script></ul></li></ul></div></div><div class="sub-head hidden-xs"><span class="tag-nav__item btn-all-tag"><a href="https://segmentfault.com/tags" class="text-secondNav">热门标签</a></span><div class="tag-container-outer"><span class="tag-nav__item mr20 active"><a class="active" href="https://segmentfault.com/questions">全部</a></span><div class="tag-container"><span class="tag-nav__item mr20 "><a class="text-secondNav" href="https://segmentfault.com/t/javascript">javascript</a></span><span class="tag-nav__item mr20 "><a class="text-secondNav" href="https://segmentfault.com/t/php">php</a></span><span class="tag-nav__item mr20 "><a class="text-secondNav" href="https://segmentfault.com/t/css">css</a></span><span class="tag-nav__item mr20 "><a class="text-secondNav" href="https://segmentfault.com/t/html">html</a></span><span class="tag-nav__item mr20 "><a class="text-secondNav" href="https://segmentfault.com/t/%E5%89%8D%E7%AB%AF">前端</a></span><span class="tag-nav__item mr20 "><a class="text-secondNav" href="https://segmentfault.com/t/java">java</a></span><span class="tag-nav__item mr20 "><a class="text-secondNav" href="https://segmentfault.com/t/python">python</a></span><span class="tag-nav__item mr20 "><a class="text-secondNav" href="https://segmentfault.com/t/html5">html5</a></span><span class="tag-nav__item mr20 "><a class="text-secondNav" href="https://segmentfault.com/t/node.js">node.js</a></span><span class="tag-nav__item mr20 "><a class="text-secondNav" href="https://segmentfault.com/t/vue.js">vue.js</a></span><span class="tag-nav__item mr20 "><a class="text-secondNav" href="https://segmentfault.com/t/mysql">mysql</a></span><span class="tag-nav__item mr20 "><a class="text-secondNav" href="https://segmentfault.com/t/jquery">jquery</a></span><span class="tag-nav__item mr20 "><a class="text-secondNav" href="https://segmentfault.com/t/android">android</a></span><span class="tag-nav__item mr20 "><a class="text-secondNav" href="https://segmentfault.com/t/ios">ios</a></span><span class="tag-nav__item mr20 "><a class="text-secondNav" href="https://segmentfault.com/t/linux">linux</a></span><span class="tag-nav__item mr20 "><a class="text-secondNav" href="https://segmentfault.com/t/react.js">react.js</a></span><span class="tag-nav__item mr20 "><a class="text-secondNav" href="https://segmentfault.com/t/c%2B%2B">c++</a></span><span class="tag-nav__item mr20 "><a class="text-secondNav" href="https://segmentfault.com/t/c">c</a></span><span class="tag-nav__item mr20 "><a class="text-secondNav" href="https://segmentfault.com/t/angular.js">angular.js</a></span><span class="tag-nav__item mr20 "><a class="text-secondNav" href="https://segmentfault.com/t/css3">css3</a></span></div></div><div class="gradient-block"></div></div></nav></div><div class="wrap">
+
+    <div class="post-topheader">
+        <div class="container">
+            <div class="block-for-right-border">
+                <div class="row">
+                    <div class="col-md-9 col-sm-8 col-xs-12">
+                        <span class="post-topheader__title--icon-symbol">问</span>
+
+                        <div class="post-topheader__info">
+                            <h1 class="h3 post-topheader__info--title" id="questionTitle" data-id="1010000007679514">
+                                <a href="https://segmentfault.com/q/1010000007679514">git中stash的工作原理是什么？</a>
+                            </h1>
+
+                            <ul class="taglist--inline inline-block question__title--tag mr10">
+                                                                    <li class="tagPopup mb5"><a class="tag" href="https://segmentfault.com/t/git" data-toggle="popover" data-img="https://sfault-avatar.b0.upaiyun.com/346/251/346251195-1040000000089459_huge256" data-placement="top" data-original-title="git" data-id="1040000000089459">git</a></li>
+                                                            </ul>
+
+                            <div class="question__author">
+                                <a href="https://segmentfault.com/u/anjingdemuma" class="mr5"><strong>安静的木马</strong></a>
+                                2016年12月03日提问<span class="hidden-xs">
+                                                                                          </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-4 col-xs-12 hidden-xs">
+                        <ul class="post-topheader__side list-unstyled">
+                            <li>
+                                                                    <button type="button" id="sideFollow" class="btn btn-success btn-sm active" data-id="1010000007679514" data-do="follow/cancel" data-type="question" data-toggle="tooltip" data-placement="right" title="" data-original-title="关注后将获得更新提醒">已关注
+                                    </button>
+                                                                <strong>3</strong> 关注
+                            </li>
+                            <li>
+                                                                    <button type="button" id="sideBookmark" class="btn btn-default btn-sm" data-id="1010000007679514" data-type="question">收藏
+                                    </button>
+                                                                <strong id="sideBookmarked">2</strong> 收藏，<strong class="no-stress">1.4k</strong> 浏览
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end .post-topheader -->
+
+    <div class="container mt30">
+        <div class="row">
+            <div class="col-xs-12 col-md-9 main">
+                <article class="widget-question__item">
+                    <div class="post-col">
+                        <div class="widget-vote  ">
+                            <button type="button" class="like" data-id="1010000007679514" data-type="question" data-do="like" data-toggle="tooltip" data-placement="top" title="" data-original-title="问题对人有帮助，内容完整，我也想知道答案">
+                                <span class="sr-only">问题对人有帮助，内容完整，我也想知道答案</span>
+                            </button>
+                                                        <span class="count">1</span>
+                            <button type="button" class="hate" data-id="1010000007679514" data-type="question" data-do="hate" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="问题没有实际价值，缺少关键内容，没有改进余地">
+                                <span class="sr-only">问题没有实际价值，缺少关键内容，没有改进余地</span>
+                            </button>
+                        </div>
+                        <!-- end .widget-vote -->
+                    </div>
+
+                    <div class="post-offset">
+                        <div class="question fmt" data-id="1010000007679514">
+                                                            
+<p>1.测试场景一：<br>假设index.html本来就在代码仓库中，现在修改了index.html页面，然后add暂存index.html页面，接着继续修改index.html页面，然后git stash，这个时候代码仓库干净了，修改被暂存，然后执行git stash pop，还原修改，这个时候发现，工作区的修改还原了，但是暂存区的修改丢失了。<strong>也就是git status发现，没有任何修改被暂存，之前暂存的修改被废弃了，但是工作区的修改完全被保留。</strong></p>
+<p>2.测试场景二：<br>现在添加test01.html页面，git status显示test01.html并没有被git跟踪，然后修改index.html文件，这个时候git stash，发现index.html文件被暂存，但是test01.html文件没有被暂存。<strong>也就是git status并没有暂存没有被git跟踪的文件。</strong></p>
+<p>3.测试场景三：<br>延续场景二，修改index.html文件，test01.html文件为新添文件，这个时候git add test01.html文件，让test01.html被git追踪，再git stash，通过git stash show方法可以看到test01.html文件被暂存，接着git stash pop,修改被还原，git status发现test01.html文件是被暂存状态，index.html还是被保留的工作区的修改。<strong>也就是git add 一个之前未被git追踪的文件，git stash后，这个文件会被暂存，而且git stash pop后，新添加的这个文件还是暂存状态，对比测试场景一中，index.html文件只是工作区的修改被暂存，暂存区的修改被丢失。</strong></p>
+<p>4.测试场景四：<br>延续场景三，修改index.html文件，test01.html文件为新添文件，这个时候git add test01.html文件，让test01.html被git追踪，然后再修改test01.html文件，接着git stash，git stash pop，发现test01.html依然是暂存状态，但是被暂存的文件内容却是工作区最终的修改内容。<strong>也就是git add 一个之前未被git追踪的文件，然后再修改这个文件，git stash后，这个文件会被暂存，而且git stash pop后，新添加的这个文件还是暂存状态，但是暂存的修改内容却是之前工作区的修改内容而不是通过add暂存的修改内容。</strong></p>
+<p><span class="img-wrap"><img data-src="/img/bVsQzS" src="./git中stash的工作原理是什么？ - SegmentFault_files/squares.svg" style="cursor: pointer;"></span><br>通过以上测试，我没有发现git stash的工作规律，非常晕，希望git高手给我指导分析一下。</p>
+
+                            
+                        </div>
+
+
+                                                                                                                        
+                        
+                        <div class="row">
+                            <div class="post-opt col-md-8">
+                                <ul class="list-inline mb0"><li class="pr15"><a href="https://segmentfault.com/q/1010000007679514">2016年12月03日提问</a></li><li class="pl0 pr15"><a href="javascript:void(0);" class="comments" data-id="1010000007679514" data-target="#comment-1010000007679514"><i class="fa fa-commenting mr4" aria-hidden="true"></i>2 评论</a></li><li class="edit-btn js__rank-check pl0 pr15" data-toggle="tooltip" data-placement="top" title="" data-original-title="声望需要达到 15"><a class="  " href="javascript:;" data-title="git中stash的工作原理是什么？" data-url="http://sfau.lt/bNGnXi" data-id="1010000007679514">邀请回答</a></li><li data-toggle="tooltip" data-placement="top" title="" class="edit-btn js__rank-check pl0 pr15" data-original-title="声望需要达到 200"><a href="javascript:;">编辑</a></li><li class="dropdown js__content-ops pl0 pr15" data-module="question" data-typetext="问题" data-id="1010000007679514"><a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></a><ul class="dropdown-menu dropdown-menu-left"><li><a href="https://segmentfault.com/q/1010000007679514#911" data-toggle="modal" data-target="#911" data-action="report">举报</a></li><li><a href="javascript:void(0);" data-toggle="modal" data-target="#911" data-action="close">关闭</a></li></ul></li></ul>                            </div>
+
+                            
+                        </div>
+
+
+                        <div class="widget-comments hidden" id="comment-1010000007679514" data-id="1010000007679514"><div class="widget-comments__form row"><form class="clearfix" method="POST"><div class="form-group mb0 widget-comments__form--input"><input name="id" type="hidden" value="1010000007679514"><textarea rows="1" name="text" class="form-control mono" id="commentText-1010000007679514" data-id="1010000007679514" placeholder="使用评论询问更多信息或提出修改意见，请不要在评论里回答问题"></textarea></div><div class="widget-comments__btn"><div class="pull-right"><button type="submit" class="btn btn-default postComment" data-id="1010000007679514">提交评论
+                                </button><span class="widget-comments__btn--tips"><a href="javascript:void(0);" class="toggle-comment-helper" title="语法提示"><i class="fa fa-question-circle"></i></a></span></div></div></form><div class="col-md-12"><div class="alert alert-warning alert-dismissible mb0 mt10 fmt comment-helper" data-rank="1" style="display:none;" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="right:0;"><span aria-hidden="true">×</span></button>
+                            评论支持部分 Markdown 语法：<code>**bold**</code><code>_italic_</code><code>[link](http://example.com)</code><code>&gt; 引用</code><code>`code`</code><code>-
+                            列表</code>。<br>同时，被你 @ 的用户也会收到通知
+                        </div></div></div><!-- /.widget-comments__form --></div><!-- /.widget-comments -->
+                    </div>
+                    <!-- end .post-offset -->
+                </article>
+
+                <div class="sfad">
+                    <div class="post-col"></div>
+                    <div class="row post-offset">
+                        <div class="sfad__item col-md-6 pl0 pr0"><ins data-revive-zoneid="7" data-revive-block="1" data-revive-id="0042ddc520dc895b7aa784fe6f9339bd"></ins></div>
+                        <div class="sfad__item col-md-6 pl0 pr0"><ins data-revive-zoneid="8" data-revive-block="1" data-revive-id="0042ddc520dc895b7aa784fe6f9339bd"></ins></div>
+                    </div>
+                </div>
+
+                    <div class="widget-answers">
+        <div class="btn-group pull-right" role="group">
+            <a href="https://segmentfault.com/q/1010000007679514#answers-title" id="sortby-rank" class="btn btn-default btn-xs active">默认排序</a>
+            <a href="https://segmentfault.com/q/1010000007679514?sort=created#answers-title" id="sortby-created" class="btn btn-default btn-xs">时间排序</a>
+        </div>
+
+        <h2 class="title h4 mt30 mb20 post-title" id="answers-title">2个回答</h2>
+                                                
+                    
+    
+            
+
+
+    <article class="clearfix widget-answers__item" id="a-1020000007680096">
+        <div class="post-col">
+            <div class="widget-vote ">
+                <button type="button" class="like" data-id="1020000007680096" data-type="answer" data-do="like" data-toggle="tooltip" data-placement="top" title="" data-original-title="答案对人有帮助，有参考价值">
+                    <span class="sr-only">答案对人有帮助，有参考价值</span>
+                </button>
+                                <span class="count">1</span>
+                <button type="button" class="hate" data-id="1020000007680096" data-type="answer" data-do="hate" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="答案没帮助，是错误的答案，答非所问">
+                    <span class="sr-only">答案没帮助，是错误的答案，答非所问</span>
+                </button>
+
+            </div>
+            
+            
+                        
+        </div>
+
+        <div class="post-offset">
+            <div class="answer fmt" data-id="1020000007680096">
+                                    
+<p>首先，我说明一下<code>git stash</code>命令的基本功能：<em>处理工作目录脏的状态，即<strong>修改的跟踪文件</strong>与<strong>暂存改动</strong>，然后将未完成的修改保存到一个栈上</em>。知道了这些之后，我们来看看我总结的几个要点：</p>
+<ul>
+<li><p><code>git stash</code>命令会将已跟踪的文件压入栈中，而未被跟踪的文件不会被压入栈中，正如楼主的实验2中所描述的。</p></li>
+<li><p>如果之前的工作<strong>有被添加到暂存区</strong>，<code>git stash</code>命令默认不会将弹出栈的那个修改再加入暂存区，正如楼主的实验1所描述的那样，但是楼主的描述其实有误，之前暂存的修改并不是被废弃或丢失而是保留在工作区，只是未加入暂存区而已。</p></li>
+<li><p>对于楼主的实验2、3中的<strong>新添加文件</strong>test01.html，其实这算一种特殊情况吧。我们可以这样理解：<code>stash pop</code>的结果就是还原以前的修改，而它对于test01.html所能做的恢复操作也只能是重新加入暂存区，否则的话，test01.html将回到未被跟踪的状态。</p></li>
+<li><p>如果想要重新应用之前<strong>暂存</strong>的修改，可以在<code>git stash pop</code>后加上<code>--index</code>选项，这样的话就可以恢复到和之前一模一样了，即之前暂存过的现在也会是暂存状态，为暂存的仍是未暂存的状态。</p></li>
+</ul>
+<p>最后，我需要声明下楼主所说的:</p>
+<blockquote><p>之前暂存的修改被废弃了</p></blockquote>
+<p>或者</p>
+<blockquote><p>暂存区的修改被丢失</p></blockquote>
+<p>其实描述有误，或者不该这样描述，因为这样会使我们误解——我们可能会误认为<del><code>git stash</code>只会暂存工作区的修改</del>，而实际情况应该是这样的：<code>git stash</code>默认会将被恢复的操作保留在工作区，但是<strong>不会自动帮你重新暂存</strong>。<br>楼主可以重新做一下上述的实验以验证我的说法。</p>
+
+                            </div>
+
+            
+                        
+            <div class="row answer__info--row">
+                <div class="post-opt col-md-8 col-sm-8 col-xs-10">
+                    <ul class="list-inline mb0"><li class="pr15"><a href="https://segmentfault.com/q/1010000007679514/a-1020000007680096" data-toggle="tooltip" data-placement="top" title="" data-original-title="2016年12月03日 发布">2016年12月03日更新</a></li><li class="pl0 pr15"><a href="javascript:void(0);" class="comments" data-id="1020000007680096" data-target="#comment-1020000007680096"><i class="fa fa-commenting mr4" aria-hidden="true"></i>评论</a></li><li data-toggle="tooltip" data-placement="top" title="" class="edit-btn js__rank-check pl0 pr15" data-original-title="声望需要达到 200"><a href="javascript:;">编辑</a></li><li class="dropdown js__content-ops pl0" data-typetext="答案" data-module="answer" data-id="1020000007680096"><a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></a><ul class="dropdown-menu dropdown-menu-left"><li><a href="https://segmentfault.com/q/1010000007679514#911" data-toggle="modal" data-target="#911" data-action="report">举报</a></li><li><a href="https://segmentfault.com/q/1010000007679514/a-1020000007680096/revision">历史版本</a></li></ul></li></ul>                </div>
+
+                <div class="col-md-2 col-sm-2 col-xs-2 answer__info--author-avatar">
+                    <a class="mr10" href="https://segmentfault.com/u/fibird"><img class="avatar-32 prestige-exceed-1000" data-toggle="popover" data-slug="fibird" data-id="1030000007177702" src="./git中stash的工作原理是什么？ - SegmentFault_files/452937700-58c6821686034_big64" alt="" data-original-title="" title=""></a>
+                </div>
+                <div class="col-md-2 col-sm-2 hidden-xs answer__info--author">
+                    <div class=" answer__info--author-warp">
+                        <a class="answer__info--author-name" title="FiBird" href="https://segmentfault.com/u/fibird">FiBird</a><span class="answer__info--author-rank">1k 声望</span></div>
+                </div>
+            </div>
+
+
+            <div class="widget-comments hidden" id="comment-1020000007680096" data-id="1020000007680096"><div class="widget-comments__form row"><form class="clearfix" method="POST"><div class="form-group mb0 widget-comments__form--input"><input name="id" type="hidden" value="1020000007680096"><textarea rows="1" name="text" class="form-control mono" id="commentText-1020000007680096" data-id="1020000007680096" placeholder="使用评论询问更多信息或提出修改意见，请不要在评论里回答问题"></textarea></div><div class="widget-comments__btn"><div class="pull-right"><button type="submit" class="btn btn-default postComment" data-id="1020000007680096">提交评论
+                                </button><span class="widget-comments__btn--tips"><a href="javascript:void(0);" class="toggle-comment-helper" title="语法提示"><i class="fa fa-question-circle"></i></a></span></div></div></form><div class="col-md-12"><div class="alert alert-warning alert-dismissible mb0 mt10 fmt comment-helper" data-rank="1" style="display:none;" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="right:0;"><span aria-hidden="true">×</span></button>
+                            评论支持部分 Markdown 语法：<code>**bold**</code><code>_italic_</code><code>[link](http://example.com)</code><code>&gt; 引用</code><code>`code`</code><code>-
+                            列表</code>。<br>同时，被你 @ 的用户也会收到通知
+                        </div></div></div><!-- /.widget-comments__form --></div><!-- /.widget-comments -->
+
+
+        </div>
+            </article><!-- /article -->
+
+                    
+    
+            
+
+
+    <article class="clearfix widget-answers__item" id="a-1020000010984508">
+        <div class="post-col">
+            <div class="widget-vote ">
+                <button type="button" class="like" data-id="1020000010984508" data-type="answer" data-do="like" data-toggle="tooltip" data-placement="top" title="" data-original-title="答案对人有帮助，有参考价值">
+                    <span class="sr-only">答案对人有帮助，有参考价值</span>
+                </button>
+                                <span class="count">0</span>
+                <button type="button" class="hate" data-id="1020000010984508" data-type="answer" data-do="hate" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="答案没帮助，是错误的答案，答非所问">
+                    <span class="sr-only">答案没帮助，是错误的答案，答非所问</span>
+                </button>
+
+            </div>
+            
+            
+                        
+        </div>
+
+        <div class="post-offset">
+            <div class="answer fmt" data-id="1020000010984508">
+                                    
+<p><a href="https://segmentfault.com/u/fibird">@FiBird</a> </p>
+<p>对于楼主的实验2、3中的新添加文件test01.html，其实这算一种特殊情况吧。我们可以这样理解：stash pop的结果就是还原以前的修改，而它对于test01.html所能做的恢复操作也只能是重新加入暂存区，否则的话，test01.html将回到未被跟踪的状态。</p>
+<p>对于你说的这个特殊情况我做了这样一个试验：<br><span class="img-wrap"><img data-src="/img/bVUfJD" src="./git中stash的工作原理是什么？ - SegmentFault_files/bVUfJD" style="cursor: pointer; display: inline;"></span></p>
+<p>也就说这种由于对test01.html的恢复操作只能重新加入暂存区，所以导致了如果此时工作区和暂存区有差异的话，会同时还原到暂存区和工作区。可是当我们git stash时还未执行add，是不是可以证明git stash操作会帮我们add？</p>
+
+                            </div>
+
+            
+                        
+            <div class="row answer__info--row">
+                <div class="post-opt col-md-8 col-sm-8 col-xs-10">
+                    <ul class="list-inline mb0"><li class="pr15"><a href="https://segmentfault.com/q/1010000007679514/a-1020000010984508"> 刚刚回答</a></li><li class="pl0 pr15"><a href="javascript:void(0);" class="comments" data-id="1020000010984508" data-target="#comment-1020000010984508"><i class="fa fa-commenting mr4" aria-hidden="true"></i>评论</a></li><li class="pl0 pr15"><a href="https://segmentfault.com/q/1010000007679514/a-1020000010984508/edit">编辑</a></li><li class="dropdown js__content-ops pl0" data-typetext="答案" data-module="answer" data-id="1020000010984508"><a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></a><ul class="dropdown-menu dropdown-menu-left"><li><a href="https://segmentfault.com/q/1010000007679514#911" data-toggle="modal" data-target="#911" data-action="report">举报</a></li><li><a href="javascript:void(0);" data-toggle="modal" data-target="#911" data-action="ignore">忽略</a></li><li><a data-toggle="modal" data-target="#911" data-action="delete" href="javascript:;">删除</a></li><li><a href="https://segmentfault.com/q/1010000007679514/a-1020000010984508/revision">历史版本</a></li></ul></li></ul>                </div>
+
+                <div class="col-md-2 col-sm-2 col-xs-2 answer__info--author-avatar">
+                    <a class="mr10" href="https://segmentfault.com/u/milo_59aae0cc1ef10"><img class="avatar-32 " data-toggle="popover" data-slug="milo_59aae0cc1ef10" data-id="1030000010984382" src="./git中stash的工作原理是什么？ - SegmentFault_files/user-64.png" alt=""></a>
+                </div>
+                <div class="col-md-2 col-sm-2 hidden-xs answer__info--author">
+                    <div class=" answer__info--author-warp">
+                        <a class="answer__info--author-name" title="milo" href="https://segmentfault.com/u/milo_59aae0cc1ef10">milo</a><span class="answer__info--author-rank">1 声望</span></div>
+                </div>
+            </div>
+
+
+            <div class="widget-comments hidden" id="comment-1020000010984508" data-id="1020000010984508"><div class="widget-comments__form row"><form class="clearfix" method="POST"><div class="form-group mb0 widget-comments__form--input"><input name="id" type="hidden" value="1020000010984508"><textarea rows="1" name="text" class="form-control mono" id="commentText-1020000010984508" data-id="1020000010984508" placeholder="使用评论询问更多信息或提出修改意见，请不要在评论里回答问题"></textarea></div><div class="widget-comments__btn"><div class="pull-right"><button type="submit" class="btn btn-default postComment" data-id="1020000010984508">提交评论
+                                </button><span class="widget-comments__btn--tips"><a href="javascript:void(0);" class="toggle-comment-helper" title="语法提示"><i class="fa fa-question-circle"></i></a></span></div></div></form><div class="col-md-12"><div class="alert alert-warning alert-dismissible mb0 mt10 fmt comment-helper" data-rank="1" style="display:none;" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="right:0;"><span aria-hidden="true">×</span></button>
+                            评论支持部分 Markdown 语法：<code>**bold**</code><code>_italic_</code><code>[link](http://example.com)</code><code>&gt; 引用</code><code>`code`</code><code>-
+                            列表</code>。<br>同时，被你 @ 的用户也会收到通知
+                        </div></div></div><!-- /.widget-comments__form --></div><!-- /.widget-comments -->
+
+
+        </div>
+            </article><!-- /article -->
+
+        
+        
+        
+        <div class="text-center">
+            
+        </div>
+    </div><!-- /.widget-answers -->
+
+
+            
+
+                    <div class="login-warn text-center">这个问题您已经提交过答案, 您可以对<a href="https://segmentfault.com/q/1010000007679514#a-1020000010984508">现有答案</a>进行<a href="https://segmentfault.com/q/1010000007679514/a-1020000010984508/edit">修改</a></div>
+            
+                            <div class="widget-invite mt30">
+            <p>
+                <span class="text-muted">不知道答案？你还可以</span>
+                <a href="https://segmentfault.com/q/1010000007679514#" class="btn btn-default btn-sm inviteBtn ml5" data-title="git中stash的工作原理是什么？" data-url="http://sfau.lt/bNGnXi" data-id="1010000007679514">邀请回答</a>
+                <a class="qa-detail__invent-switch pull-right" href="javascript:;">
+                    <i class="fa fa-refresh"></i> 换一组
+                </a>
+            </p>
+                    <div class="qa-detail__invent">
+    <div class="row">
+
+            
+<div class="col-md-6 qa-detail__invent-item"><img src="./git中stash的工作原理是什么？ - SegmentFault_files/729444579-5722196d267c7_big64">
+<div class="qa-detail__invent-info"><a class="qa-detail__invent-name" target="_blank" href="https://segmentfault.com/u/s1ngs1ng">S1ngS1ng</a><span class="qa-detail__invent-desc">
+git 标签下有 56 个回答</span></div>
+<button class="btn btn-default btn-xs
+qa-detail__invent-btn
+" data-id="1030000005002656" data-slug="s1ngs1ng">
+邀请回答</button>
+        </div>
+                
+<div class="col-md-6 qa-detail__invent-item"><img src="./git中stash的工作原理是什么？ - SegmentFault_files/user-64.png">
+<div class="qa-detail__invent-info"><a class="qa-detail__invent-name" target="_blank" href="https://segmentfault.com/u/carterli">CarterLi</a><span class="qa-detail__invent-desc">
+git 标签下有 0 个回答</span></div>
+<button class="btn btn-default btn-xs
+qa-detail__invent-btn
+" data-id="1030000010432080" data-slug="carterli">
+邀请回答</button>
+        </div>
+                
+<div class="col-md-6 qa-detail__invent-item"><img src="./git中stash的工作原理是什么？ - SegmentFault_files/2630188223-1030000000125916_big64">
+<div class="qa-detail__invent-info"><a class="qa-detail__invent-name" target="_blank" href="https://segmentfault.com/u/nightire">n͛i͛g͛h͛t͛i͛r͛e͛</a><span class="qa-detail__invent-desc">
+git 标签下有 43 个回答</span></div>
+<button class="btn btn-default btn-xs
+qa-detail__invent-btn
+" data-id="1030000000125916" data-slug="nightire">
+邀请回答</button>
+        </div>
+                
+<div class="col-md-6 qa-detail__invent-item"><img src="./git中stash的工作原理是什么？ - SegmentFault_files/2161672323-58df05ab75f31_big64">
+<div class="qa-detail__invent-info"><a class="qa-detail__invent-name" target="_blank" href="https://segmentfault.com/u/pushaowei">无敌小笼包</a><span class="qa-detail__invent-desc">
+git 标签下有 2 个回答</span></div>
+<button class="btn btn-default btn-xs
+qa-detail__invent-btn
+" data-id="1030000006906717" data-slug="pushaowei">
+邀请回答</button>
+        </div>
+                
+        </div>
+        </div>
+</div>
+    
+                            </div>
+            <!-- /.main -->
+
+
+            
+<div class="col-xs-12 col-md-3 side">
+        <div id="mm_124884735_33830642_120268985" class="mb10"><span style="overflow: visible; position: relative; display: block; width: 255px; height: 213px; background: none; border: 0px; text-align: left;"><span style="overflow: hidden; position: absolute; display: block; width: 255px; height: 213px; background: none; border: 0px; text-align: left;"><span style="overflow: hidden; position: absolute; display: block; width: 255px; height: 213px; background: none; border: 0px; text-align: left;"><a href="https://afptrack.alimama.com/clk?bid=0a671c91000159aae3b318a925e13010&amp;pid=mm_124884735_33830642_120268985&amp;cid=249291&amp;mid=235943&amp;oid=33282&amp;productType=1&amp;qytInfoMTime=1504288941&amp;e=iB1Xj95LEba0LVip4%2BMlAXcx166N6If8YzNhKxSaZBbC4vLB%2FUNmCAfdJ45WmGQR%2FRmJL%2FPFN5Ve3dDffc%2F5EjvhY9SafD678Ag2rzvFPFpLyVo5dVqSqg%3D%3D&amp;k=121" target="_blank" style="position: absolute; display: block; top: 0px; left: 0px; margin: 0px; padding: 0px; width: 255px; height: 213px; text-decoration: none; opacity: 0; z-index: 1; cursor: pointer; background: rgb(255, 255, 255);"></a><img src="./git中stash的工作原理是什么？ - SegmentFault_files/f1eff78dea88fcbdfadfa4a739c785c7.png" style="z-index: 2; border: none; position: absolute; margin: 0px !important; width: 40px !important; height: 28px !important; top: 0px; left: 0px;"><img id="ac_cs_mm_124884735_33830642_120268985_1" border="0" src="./git中stash的工作原理是什么？ - SegmentFault_files/340fa31fa3f36c9e3bdd9385f3c7170b.jpeg" style="width: 255px; height: 213px;"></span></span></span></div>
+    <div id="mm_124884735_33830642_121788665" class="mb25"><div id="ac_wrap_mm_124884735_33830642_121788665" style="width:255px"><script async=""></script>
+<!-- 问题页右侧栏方块 -->
+<ins class="adsbygoogle" style="display:inline-block;width:255px;height:213px" data-ad-client="ca-pub-6330872677300335" data-ad-slot="2430072005" data-adsbygoogle-status="done"><ins id="aswift_0_expand" style="display:inline-table;border:none;height:213px;margin:0;padding:0;position:relative;visibility:visible;width:255px;background-color:transparent;"><ins id="aswift_0_anchor" style="display:block;border:none;height:213px;margin:0;padding:0;position:relative;visibility:visible;width:255px;background-color:transparent;"><iframe width="255" height="213" frameborder="0" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" allowfullscreen="true" onload="var i=this.id,s=window.google_iframe_oncopy,H=s&amp;&amp;s.handlers,h=H&amp;&amp;H[i],w=this.contentWindow,d;try{d=w.document}catch(e){}if(h&amp;&amp;d&amp;&amp;(!d.body||!d.body.firstChild)){if(h.call){setTimeout(h,0)}else if(h.match){try{h=s.upd(h,i)}catch(e){}w.location.replace(h)}}" id="aswift_0" name="aswift_0" style="left:0;position:absolute;top:0;width:255px;height:213px;" src="./git中stash的工作原理是什么？ - SegmentFault_files/saved_resource.html"></iframe></ins></ins></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script><script type="text/javascript"></script><script type="text/javascript"></script><script type="text/javascript"></script><script type="text/javascript"></script><script type="text/javascript"></script></div></div>
+    
+    <!--     <div data-api="/api/news/hottest">
+        <script type="text/template">
+            <div class="widget_headline widget-box mt20 mb30">
+                <h2 class="h4 widget-box__title">热门头条</h2>
+                <ul class="taglist--block pl20" >
+                    <% _.each(data,function(d){ %>
+                    <li class="">
+                        <a href="<%- d.url %>" data-id="<%- d.id %>"
+                           data-original-title="<%= d.name %>"><%= d.title %></a>
+                        <p class=""><span class="mr5 color_F5A623"><%- d.VotesWord %> 赞</span> | <span class="ml5"><%- d.comments %> 评论</span></p>
+                    </li>
+                    <% }) %>
+                    <a href="/news" target="_blank" class="f12" >更多头条内容→</a>
+                </ul>
+
+            </div>
+        </script>
+    </div>
+ -->
+        <div data-api="/api/live/recommend">
+        <script type="text/template">
+            <div class="widget-box widget_lives">
+                <h2 class="widget-box__title">
+                    讲堂推荐
+                    <i class="fa fa-youtube-play fa-sm" aria-hidden="true"></i>
+                    <a href="/lives" class="pull-right more">更多</a>
+                </h2>
+     
+
+                <div style="padding-left:4px;">
+                    <div class="line">
+                        <% _.each(data,function(d){ %>
+                        <div class="item">
+                            <span class="thePoint"></span>
+                            <p class="startWord"><%- d.startWord %></p>
+                            <div>
+                                <a href="<%-d.user.url%>" target="_blank" class="pull-left"><img src="<%- d.user.avatarUrl %>" class="lecturer_avater"> 
+                                </a>
+                                <div class="message">
+                                    <a href="<%- d.url%>" target="_blank" class="lecturer_title">
+                                        <div class="titlebox"><%- d.title %></div>
+                                    </a>
+                                    <p class="">
+                                        <a href="<%-d.user.url%>" target="_blank" class="lecturer_name"><%-d.user.name %></a><span class="split"></span><span class="joinedUsers"><%- d.joinedUsers %> 人参与</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <% }) %>
+                    </div>
+                </div>
+            </div>
+        </script>
+    
+            <div class="widget-box widget_lives">
+                <h2 class="widget-box__title">
+                    讲堂推荐
+                    <i class="fa fa-youtube-play fa-sm" aria-hidden="true"></i>
+                    <a href="https://segmentfault.com/lives" class="pull-right more">更多</a>
+                </h2>
+     
+
+                <div style="padding-left:4px;">
+                    <div class="line">
+                        
+                        <div class="item">
+                            <span class="thePoint"></span>
+                            <p class="startWord">18小时后</p>
+                            <div>
+                                <a href="https://segmentfault.com/u/lx1036" target="_blank" class="pull-left"><img src="./git中stash的工作原理是什么？ - SegmentFault_files/3107944513-57f9f612c8fa1_big64" class="lecturer_avater"> 
+                                </a>
+                                <div class="message">
+                                    <a href="https://segmentfault.com/l/1500000010592276" target="_blank" class="lecturer_title">
+                                        <div class="titlebox">Laravel/Symfony Console的使用和源码解析</div>
+                                    </a>
+                                    <p class="">
+                                        <a href="https://segmentfault.com/u/lx1036" target="_blank" class="lecturer_name">lx1036</a><span class="split"></span><span class="joinedUsers">13 人参与</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="item">
+                            <span class="thePoint"></span>
+                            <p class="startWord">18小时后</p>
+                            <div>
+                                <a href="https://segmentfault.com/u/coderknock" target="_blank" class="pull-left"><img src="./git中stash的工作原理是什么？ - SegmentFault_files/2725835811-599845bb42707_big64" class="lecturer_avater"> 
+                                </a>
+                                <div class="message">
+                                    <a href="https://segmentfault.com/l/1500000010001040" target="_blank" class="lecturer_title">
+                                        <div class="titlebox">提升职业竞争力的必备知识 Redis 之排行榜与附近的人</div>
+                                    </a>
+                                    <p class="">
+                                        <a href="https://segmentfault.com/u/coderknock" target="_blank" class="lecturer_name">拿客_三产</a><span class="split"></span><span class="joinedUsers">9 人参与</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="item">
+                            <span class="thePoint"></span>
+                            <p class="startWord">2017-09-10 周日</p>
+                            <div>
+                                <a href="https://segmentfault.com/u/kailuntalk" target="_blank" class="pull-left"><img src="./git中stash的工作原理是什么？ - SegmentFault_files/2811484464-596dac02ef825_big64" class="lecturer_avater"> 
+                                </a>
+                                <div class="message">
+                                    <a href="https://segmentfault.com/l/1500000010322132" target="_blank" class="lecturer_title">
+                                        <div class="titlebox">从0到1解析Mybatis源码(一)-核心流程、数据转换、字段映射</div>
+                                    </a>
+                                    <p class="">
+                                        <a href="https://segmentfault.com/u/kailuntalk" target="_blank" class="lecturer_name">凯伦说</a><span class="split"></span><span class="joinedUsers">13 人参与</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="item">
+                            <span class="thePoint"></span>
+                            <p class="startWord">2017-09-11 周一</p>
+                            <div>
+                                <a href="https://segmentfault.com/u/lijie_593a35d626c24" target="_blank" class="pull-left"><img src="./git中stash的工作原理是什么？ - SegmentFault_files/437904260-5954eb524cd5a_big64" class="lecturer_avater"> 
+                                </a>
+                                <div class="message">
+                                    <a href="https://segmentfault.com/l/1500000009892076" target="_blank" class="lecturer_title">
+                                        <div class="titlebox">Node.js同构模块化的实现方案</div>
+                                    </a>
+                                    <p class="">
+                                        <a href="https://segmentfault.com/u/lijie_593a35d626c24" target="_blank" class="lecturer_name">李捷</a><span class="split"></span><span class="joinedUsers">57 人参与</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="item">
+                            <span class="thePoint"></span>
+                            <p class="startWord">2017-09-12 周二</p>
+                            <div>
+                                <a href="https://segmentfault.com/u/maxn_594b744b6d311" target="_blank" class="pull-left"><img src="./git中stash的工作原理是什么？ - SegmentFault_files/1500071806-59770ea236c25_big64" class="lecturer_avater"> 
+                                </a>
+                                <div class="message">
+                                    <a href="https://segmentfault.com/l/1500000010363168" target="_blank" class="lecturer_title">
+                                        <div class="titlebox">以电子商务应用为例学习分布式多模型数据库ArangoDB</div>
+                                    </a>
+                                    <p class="">
+                                        <a href="https://segmentfault.com/u/maxn_594b744b6d311" target="_blank" class="lecturer_name">MaxN</a><span class="split"></span><span class="joinedUsers">9 人参与</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+            <!--     <div data-type="widget" data-api="/api/bookmarkArchive/hots" data-api-overwrite="/api/bookmarkArchive/1010000007679514/related">
+        <script type="text/template">
+            <div class="widget-box widget-box--bookmark no-border">
+                <h4 class="widget-box__title">相关收藏夹 <a id="widgetBookmarkRefresh" class="userstab pull-right"
+                                                          href="javascript:;">换一组</a></h4>
+                <ul class="widget-links list-unstyled media">
+                    <% _.each(data,function(d){ %>
+                    <li class="widget-links__item">
+                        <img class="pull-left pattern pattern-<%= d.id%19 %> mr10" src="https://static.segmentfault.com/v-59a5362f/global/img/pattern/<%= d.id%10 ? d.id%10 : 10 %>.svg" width="32">
+                        <div class="media-body">
+                            <a target="_blank" class="ellipsis mr0" href="<%- d.url %>"><%= d.name %></a>
+                            <p class="mb0">
+                                <span><%- d.num %></span> 个条目 <span class="division">|</span> <span><%- d.followers %></span> 人关注
+                            </p>
+                        </div>
+                    </li>
+                    <% }) %>
+                </ul>
+            </div>
+        </script>
+    </div>
+ -->
+        <div class="widget-box no-border">
+            <h2 class="h4 widget-box__title">相似问题</h2>
+            <ul class="widget-links list-unstyled">
+                                    <li class="widget-links__item"><a title="git 或 svn 恢复文件原理" href="https://segmentfault.com/q/1010000007116578">git 或 svn 恢复文件原理</a>
+                                                    <small class="text-muted">
+                                                                    4 回答
+                                                                                            </small>
+                                            </li>
+                                    <li class="widget-links__item"><a title="git diff的原理是什么?" href="https://segmentfault.com/q/1010000000596269">git diff的原理是什么?</a>
+                                                    <small class="text-muted">
+                                                                    2 回答
+                                                                                                     |                                     已解决
+                                                            </small>
+                                            </li>
+                                    <li class="widget-links__item"><a title="gitlab、gitolite的权限管理是怎么运作，实现原理？" href="https://segmentfault.com/q/1010000002510942">gitlab、gitolite的权限管理是怎么运作，实现原理？</a>
+                                                    <small class="text-muted">
+                                                                    3 回答
+                                                                                                     |                                     已解决
+                                                            </small>
+                                            </li>
+                                    <li class="widget-links__item"><a title="git提交报错" href="https://segmentfault.com/q/1010000005920990">git提交报错</a>
+                                                    <small class="text-muted">
+                                                                    3 回答
+                                                                                                     |                                     已解决
+                                                            </small>
+                                            </li>
+                                    <li class="widget-links__item"><a title="关于GIT的commit操作问题" href="https://segmentfault.com/q/1010000005819158">关于GIT的commit操作问题</a>
+                                                    <small class="text-muted">
+                                                                    3 回答
+                                                                                                     |                                     已解决
+                                                            </small>
+                                            </li>
+                                    <li class="widget-links__item"><a title="请问下  GIT SVN  ftp   这几类的工具有什么区别呢？" href="https://segmentfault.com/q/1010000002736058">请问下  GIT SVN  ftp   这几类的工具有什么区别呢？</a>
+                                                    <small class="text-muted">
+                                                                    4 回答
+                                                                                            </small>
+                                            </li>
+                                    <li class="widget-links__item"><a title="git不能clone搜狐云景app" href="https://segmentfault.com/q/1010000000775903">git不能clone搜狐云景app</a>
+                                                    <small class="text-muted">
+                                                                    2 回答
+                                                                                            </small>
+                                            </li>
+                                    <li class="widget-links__item"><a title="小白报道，如何安装gitbook和使用?" href="https://segmentfault.com/q/1010000002423216">小白报道，如何安装gitbook和使用?</a>
+                                                    <small class="text-muted">
+                                                                    1 回答
+                                                                                            </small>
+                                            </li>
+                                    <li class="widget-links__item"><a title="关于git 如何使用提交到github.com的问题，让人十分不解" href="https://segmentfault.com/q/1010000000606358">关于git 如何使用提交到github.com的问题，让人十分不解</a>
+                                                    <small class="text-muted">
+                                                                    7 回答
+                                                                                            </small>
+                                            </li>
+                                    <li class="widget-links__item"><a title="Fork的项目怎么更新和原项目保持一致" href="https://segmentfault.com/q/1010000006705469">Fork的项目怎么更新和原项目保持一致</a>
+                                                    <small class="text-muted">
+                                                                    1 回答
+                                                                                                     |                                     已解决
+                                                            </small>
+                                            </li>
+                            </ul>
+        </div>
+
+        <div class="widget-share__full" data-text="git中stash的工作原理是什么？" data-url="https://segmentfault.com/q/1010000007679514?share_user=1030000010984382" data-shorturl="http://sfau.lt/bNGnXi"><div style="margin-bottom:10px;">分享扩散：</div><div class="widget-share-network sharer-0" style="display: block;"><ul class="sn-inline"><li data-network="weibo"><a href="javascript:void(0);" class="entypo-weibo icon-sn-weibo share-1" data-toggle="tooltip" data-placement="top" title="" data-original-title="分享至新浪微博">新浪微博</a></li><li data-network="wechart"><a href="javascript:void(0);" class="entypo-wechart icon-sn-weixin share-2" data-toggle="tooltip" data-placement="top" title="" data-original-title="分享至微信">微信</a></li><li data-network="twitter"><a href="javascript:void(0);" class="entypo-twitter icon-sn-twitter share-3" data-toggle="tooltip" data-placement="top" title="" data-original-title="分享至 Twitter">Twitter</a></li><li data-network="facebook"><a href="javascript:void(0);" class="entypo-facebook icon-sn-facebook share-4" data-toggle="tooltip" data-placement="top" title="" data-original-title="分享至 Facebook">Facebook</a></li></ul></div><a type="button" class="btn btn-sm shareMore btn-sn-more" data-toggle="popover" data-placement="top" data-url="https://segmentfault.com/q/1010000007679514?share_user=1030000010984382" data-shorturl="http://sfau.lt/bNGnXi"><span class="icon-sn-dotted" data-original-title="" title=""></span><strong class="visible-xs-inline">•••</strong></a></div>
+
+
+        
+</div><!-- /.side -->
+
+        </div>
+    </div>
+</div>
+
+<div id="shareToWeiboModal" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">×</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title">分享</h4>
+            </div>
+            <div class="modal-body">
+                <p class="sfModal-content">
+                    分享到微博？
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default dont-likeweibo" data-dismiss="modal">取消</button>
+                <a href="https://segmentfault.com/q/1010000007679514" id="shareLink" class="btn btn-primary done-btn" target="_blank" onclick="$(&#39;#shareToWeiboModal&#39;).modal(&#39;hide&#39;)">分享</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    window.config = {"like_question":[1,5,"\u95ee\u9898\u88ab\u6295\u8d5e\u540c\u7968"],"hate_question":[2,-2,"\u95ee\u9898\u88ab\u6295\u53cd\u5bf9\u7968"],"ask_question":[4,1,"\u63d0\u95ee"],"like_answer":[5,10,"\u56de\u7b54\u88ab\u6295\u8d5e\u540c\u7968"],"hate_answer":[6,-2,"\u56de\u7b54\u88ab\u6295\u53cd\u5bf9\u7968"],"answer_question":[7,1,"\u56de\u7b54\u95ee\u9898"],"like_comment":[8,0,"\u8bc4\u8bba\u88ab\u8d5e\u540c"],"bookmark_question":[11,1,"\u95ee\u9898\u88ab\u6536\u85cf"],"delete_question":[12,-1,"\u95ee\u9898\u88ab\u5220\u9664\uff08\u5305\u62ec\u81ea\u5df1\u5220\u9664\uff09"],"accept_answer":[13,15,"\u56de\u7b54\u88ab\u91c7\u7eb3"],"delete_answer":[14,-5,"\u56de\u7b54\u88ab\u5220\u9664\uff08\u5305\u62ec\u81ea\u5df1\u5220\u9664\uff09"],"ignore_answer":[15,-1,"\u56de\u7b54\u88ab\u5ffd\u7565"],"question_answer":[16,1,"\u95ee\u9898\u88ab\u4ed6\u4eba\u56de\u7b54"],"invite_user":[17,0,"\u9080\u8bf7\u7528\u6237"],"like_article":[18,5,"\u6587\u7ae0\u88ab\u70b9\u8d5e"],"write_article":[20,0,"\u53d1\u5e03\u65b0\u6587\u7ae0"],"bookmark_article":[21,1,"\u6587\u7ae0\u88ab\u6536\u85cf"],"oppose_answer":[24,-1,"\u53cd\u5bf9\u4ed6\u4eba\u7b54\u6848"],"accept_answer_reward":[25,2,"\u91c7\u7eb3\u4ed6\u4eba\u7b54\u6848"],"user_register":[26,1,"\u65b0\u7528\u6237\u6fc0\u6d3b"],"report":[27,-100,"\u5185\u5bb9\u88ab\u6210\u529f\u4e3e\u62a5 6 \u6b21"],"like_share":[28,0,"\u5934\u6761\u88ab\u70b9\u8d5e"],"sign_live":[29,1,"\u4ed8\u8d39\u62a5\u540d\u8bb2\u5ea7"],"live_sign":[30,1,"\u8bb2\u5ea7\u88ab\u62a5\u540d"],"publish_live":[31,5,"\u53d1\u5e03\u8bb2\u5ea7"],"finish_live":[32,10,"\u8bb2\u5ea7\u5982\u671f\u5f00\u64ad\uff0c\u5e76\u5df2\u7ed3\u675f"],"like_question_payment":[33,5,"\u95ee\u9898\u88ab\u6295\u8d5e\u540c\u7968"],"hate_question_payment":[34,-2,"\u95ee\u9898\u88ab\u6295\u53cd\u5bf9\u7968"],"like_grapevine":[35,0,"\u5c0f\u9053\u6d88\u606f\u88ab\u70b9\u8d5e"]}
+</script>
+
+
+<div id="delete-modal" class="modal widget-911" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title radio-del question-close-only">关闭<span class="type-911">问题</span>（请谨慎操作）</h4>
+                <h4 class="modal-title radio-del question-delete-only">删除<span class="type-911">问题</span>（请谨慎操作）</h4>
+                <h4 class="modal-title radio-del answer-delete-only">删除<span class="type-911">回答</span>（请谨慎操作）</h4>
+                <h4 class="modal-title radio-del answer-ignore-only">忽略<span class="type-911">回答</span></h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <strong class="required radio-del question-close-only">关闭理由：</strong>
+                    <strong class="required radio-del question-delete-only answer-delete-only">删除理由：</strong>
+                    <strong class="required radio-del answer-ignore-only">忽略理由：</strong>
+                </p>
+                <div id="reportDescription">
+                    <div class="radio-del radio all">
+                        <label>
+                            <input type="radio" name="descRadio" value="推广（招聘、广告、SEO 等）方面的内容">
+                            推广（招聘、广告、SEO 等）方面的内容
+                        </label>
+                    </div>
+                    <div class="radio-del radio question-close-only">
+                        <label>
+                            <input type="radio" name="descRadio" value="与已有问题重复">
+                            与已有问题重复（请编辑该提问指向已有相同问题）
+                        </label>
+                    </div>
+                    <div class="radio-del radio answer-ignore-only">
+                        <label>
+                            <input type="radio" name="descRadio" value="答非所问，不符合答题要求">
+                            答非所问，不符合答题要求
+                        </label>
+                    </div>
+                    <div class="radio-del radio answer-ignore-only">
+                        <label>
+                            <input type="radio" name="descRadio" value="宜作评论而非答案">
+                            宜作评论而非答案
+                        </label>
+                    </div>
+                    <div class="radio-del radio all">
+                        <label>
+                            <input type="radio" name="descRadio" value="带有人身攻击、辱骂、仇恨等违反条款的内容">
+                            带有人身攻击、辱骂、仇恨等违反条款的内容
+                        </label>
+                    </div>
+                    <div class="radio-del radio question-close-only">
+                        <label>
+                            <input type="radio" name="descRadio" value="无法获得确切结果的问题">
+                            无法获得确切结果的问题
+                        </label>
+                    </div>
+                    <div class="radio-del radio question-close-only">
+                        <label>
+                            <input type="radio" name="descRadio" value="非开发直接相关的问题">
+                            非开发直接相关的问题
+                        </label>
+                    </div>
+                    <div class="radio-del radio question-close-only question-delete-only">
+                        <label>
+                            <input type="radio" name="descRadio" value="非技术提问的讨论型问题">
+                            非技术提问的讨论型问题
+                        </label>
+                    </div>
+
+                    <div class="radio-del radio all btwRadio">
+                        <label>
+                            <input type="radio" name="descRadio" value="">
+                            其他原因（请补充说明）
+                        </label>
+                    </div>
+                    <div class="btw" style="display:none;">
+                        <p class="mt20"><strong>补充说明：</strong></p>
+                        <textarea class="form-control" rows="3" name="description" id="deleteDesc"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-danger" id="submit-delete">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal widget-911" id="911" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button class="close" data-dismiss="modal" type="button">
+          <span aria-hidden="true">×</span>
+          <span class="sr-only">Close</span>
+        </button>
+        <h4 class="modal-title"><span data-model="action"></span><span data-model="type"></span></h4>
+      </div>
+      <div class="modal-body">
+        <form id="reportForm">
+          <!-- 后台返回信息 -->
+          <p class="alert alert-warning" data-model="returnMsg"></p>
+          <div data-role="base">
+            <p>
+              <strong class="required">我要<span data-model="action"></span>该<span data-model="type"></span>，理由是：</strong>
+            </p>
+            <ul class="list-unstyled" data-model="list"></ul>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-default pull-left" type="button" data-role="back" style="display:none">返回重选</button>
+                <button class="btn btn-default" data-dismiss="modal" type="button">取消</button>
+        <button class="btn btn-primary" data-role="submit" type="button">提交</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+
+
+<footer id="footer">
+    <div class="container">
+        <div class="row hidden-xs">
+            <dl class="col-sm-2 site-link">
+                <dt>网站相关</dt>
+                <dd><a href="https://segmentfault.com/about">关于我们</a></dd>
+                <dd><a href="https://segmentfault.com/tos">服务条款</a></dd>
+                <dd><a href="https://segmentfault.com/faq">帮助中心</a></dd>
+                <dd><a href="https://segmentfault.com/repu">声望与权限</a></dd>
+                <dd><a href="https://segmentfault.com/markdown">编辑器语法</a></dd>
+                <dd><a href="https://segmentfault.com/weekly">每周精选</a></dd>
+                                <dd><a href="https://segmentfault.com/community">社区服务中心</a></dd>
+            </dl>
+            <dl class="col-sm-2 site-link">
+                <dt>联系合作</dt>
+                <dd><a href="https://segmentfault.com/contact">联系我们</a></dd>
+                <dd><a href="https://segmentfault.com/hiring">加入我们</a></dd>
+                <dd><a href="https://segmentfault.com/link">合作伙伴</a></dd>
+                <dd><a href="https://segmentfault.com/press">媒体报道</a></dd>
+                <dd><a href="https://segmentfault.com/g/1570000009280187">建议反馈</a></dd>
+                                            </dl>
+            <dl class="col-sm-2 site-link">
+                <dt>常用链接</dt>
+                                                <dd><a href="https://chrome.google.com/webstore/detail/segmentfault-%E7%AC%94%E8%AE%B0/pjklfdmleagfaekibdccmhlhellefcfo" target="_blank">笔记插件: Chrome</a></dd>
+                                                                <dd><a href="https://addons.mozilla.org/zh-CN/firefox/addon/sf-note-ext/" target="_blank">笔记插件: Firefox</a></dd>
+                                                                <dd>订阅：<a href="https://segmentfault.com/feeds">问答</a> / <a href="https://segmentfault.com/feeds/blogs">文章</a></dd>
+                                                                <dd><a href="https://mirrors.segmentfault.com/" target="_blank">文档镜像</a></dd>
+                                                                <dd><a href="https://segmentfault.com/d-day" target="_blank">D-DAY 技术沙龙</a></dd>
+                                                                <dd><a href="https://segmentfault.com/hackathon" target="_blank">黑客马拉松 Hackathon</a></dd>
+                                                                <dd><a href="https://namebeta.com/" target="_blank">域名搜索注册</a></dd>
+                                                                <dd><a href="https://shop165859711.taobao.com/" target="_blank">周边店铺</a></dd>
+                                            </dl>
+            <dl class="col-sm-2 site-link">
+                <dt>社区日志</dt>
+                                <dd><a href="https://segmentfault.com/blog/segmentfault" target="_blank">产品技术日志</a></dd>
+                                <dd><a href="https://segmentfault.com/blog/community_admin" target="_blank">社区运营日志</a></dd>
+                                <dd><a href="https://segmentfault.com/blog/segmentfault_news" target="_blank">市场运营日志</a></dd>
+                                <dd><a href="https://segmentfault.com/blog/segmentfault_team" target="_blank">团队日志</a></dd>
+                                <dd><a href="https://segmentfault.com/blog/interview" target="_blank">社区访谈</a></dd>
+                                <dd>
+                    <ul class="sn-inline">
+                        <li>
+                            <a class="entypo-wechart icon-sn-weixin weixin-popover-qrcode" data-toggle="popover" data-placement="top" data-content="" data-original-title="" title="">微信</a>
+                        </li>
+                        <li>
+                            <a href="http://weibo.com/segmentfault" target="_blank" class="entypo-weibo icon-sn-weibo">新浪微博</a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/SegmentFault" target="_blank" class="entypo-facebook icon-sn-github">Github</a>
+                        </li>
+                        <li>
+                            <a href="https://twitter.com/segment_fault" target="_blank" class="entypo-twitter icon-sn-twitter">Twitter</a>
+                        </li>
+                    </ul>
+                </dd>
+            </dl>
+            <dl class="col-sm-4 site-link" id="license">
+                <dt>内容许可</dt>
+                <dd>除特别说明外，用户内容均采用 <a rel="license" target="_blank" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a> 进行许可
+                </dd>
+                <dd>本站由 <a target="_blank" href="https://www.upyun.com/?utm_source=segmentfault&amp;utm_medium=link&amp;utm_campaign=upyun&amp;md=segmentfault">又拍云</a> 提供 CDN 存储服务
+                </dd>
+                <dd>
+                    <a href="https://segmentfault.com/app"><img src="./git中stash的工作原理是什么？ - SegmentFault_files/appQrcode.png" class="app-qrcode"></a>
+                    <div class="app-download-desc">
+                        <p>手机扫一扫</p>
+                        <p>下载官方 App</p>
+                    </div>
+                    
+                </dd>
+            </dl>
+            <div>
+            </div>
+        </div>
+        <div class="copyright">
+            Copyright © 2011-2017 SegmentFault. 当前呈现版本 17.06.16<br>
+            <a href="http://www.miibeian.gov.cn/" rel="nofollow">浙ICP备 15005796号-2</a> &nbsp;
+            <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010602002000" rel="nofollow">浙公网安备 33010602002000号</a>
+            <span class="ml5">杭州堆栈科技有限公司版权所有</span>
+        </div>
+        <p class="text-center">
+            <a class="js__view--selector hidden-sm hidden-md hidden-lg" data-action="mobile" href="javascript:;">移动版</a>
+            <a class="js__view--selector hidden-sm hidden-md hidden-lg" data-action="desktop" href="javascript:;">桌面版</a>
+        </p>
+    </div>
+</footer>
+
+<div id="fixedTools" class="hidden-xs hidden-sm">
+    <a id="backtop" class="border-bottom" href="https://segmentfault.com/q/1010000007679514#">回顶部</a>
+</div>
+
+<script id="loginModal" type="text/template">
+    <div class="row bg-white login-modal">
+        <div class="col-md-4 col-sm-12 col-md-push-7 login-wrap">
+            <h1 class="h4 text-muted login-title">用户登录</h1>
+            <form action="/api/user/login" method="POST" role="form" class="mt30">
+                <div class="form-group">
+                    <label for="username" class="control-label">手机号 或 Email</label>
+                    <input type="text" class="form-control" name="username" required placeholder="11 位手机号 或 Email"
+                           autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label class="control-label">密码</label><span class="pull-right"><a
+                                href="/user/forgot">忘记密码</a></span>
+                    <input type="password" class="form-control" name="password" required placeholder="密码">
+                </div>
+                <div class="form-group clearfix">
+                    <div class="checkbox pull-left">
+                        <label><input name="remember" type="checkbox" value="1" checked> 记住登录状态</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary pull-right pl20 pr20"
+                            onclick='ga("send", "event", "email login button", "clicked", "login modal");'>登录
+                    </button>
+                </div>
+            </form>
+            <p class="h4 text-muted visible-xs-block h4">快速登录</p>
+            <div class="widget-login mt30">
+                <p class="text-muted mt5 mr10 pull-left hidden-xs">快速登录</p>
+                <a href="/user/oauth/google" class=""
+                   onclick='ga("send", "event", "3rd login button", "clicked", "login modal", {media: "google"});'><span
+                            class="icon-sn-google"></span> <strong class="visible-xs-inline">Google 账号</strong></a>
+                <a href="/user/oauth/github" class=""
+                   onclick='ga("send", "event", "3rd login button", "clicked", "login modal", {media: "github"});");'><span
+                            class="icon-sn-github"></span> <strong class="visible-xs-inline">Github 账号</strong></a>
+                <a href="/user/oauth/weibo" class=""
+                   onclick='ga("send", "event", "3rd login button", "clicked", "login modal", {media: "weibo"});'><span
+                            class="icon-sn-weibo"></span> <strong class="visible-xs-inline">新浪微博账号</strong></a>
+                <a href="/user/oauth/qq" class=""
+                   onclick='ga("send", "event", "3rd login button", "clicked", "login modal", {media: "qq"});'><span
+                            class="icon-sn-qq"></span> <strong class="visible-xs-inline">QQ 账号</strong></a>
+                <a href="/user/oauth/weixin" class=""
+                   onclick='ga("send", "event", "3rd login button", "clicked", "login modal", {media: "qq"});'><span
+                            class="icon-sn-weixin"></span> <strong class="visible-xs-inline">微信账号</strong></a>
+                <a href="/user/oauth/linkedin" class=""
+                   onclick='ga("send", "event", "3rd login button", "clicked", "login modal", {media: "linkedin"});'><span
+                            class="icon-sn-linkedin"></span> <strong class="visible-xs-inline">LinkedIn 账号</strong></a>
+                <span id="loginShowMore" style="cursor: pointer" class="mb5"><span class="icon-sn-dotted"></span><strong
+                            class="visible-xs-inline">•••</strong></span>
+                <a href="/user/oauth/twitter" class=" hidden"
+                   onclick='ga("send", "event", "3rd login button", "clicked", "login modal", {media: "twitter"});'><span
+                            class="icon-sn-twitter"></span> <strong class="visible-xs-inline">Twitter 账号</strong></a>
+                <a href="/user/oauth/facebook" class=" hidden"
+                   onclick='ga("send", "event", "3rd login button", "clicked", "login modal", {media: "facebook"});'><span
+                            class="icon-sn-facebook"></span> <strong class="visible-xs-inline">Facebook 账号</strong></a>
+                <a href="/user/oauth/douban" class=" hidden"
+                   onclick='ga("send", "event", "3rd login button", "clicked", "login modal", {media: "douban"});'><span
+                            class="icon-sn-douban"></span> <strong class="visible-xs-inline">豆瓣账号</strong></a>
+            </div>
+        </div>
+        <div class="login-vline hidden-xs hidden-sm"></div>
+        <div class="col-md-4 col-md-pull-3 col-sm-12 login-wrap">
+            <h1 class="h4 text-muted login-title">注册新账号</h1>
+            <form action="/api/user/phone/register" method="POST" role="form" class="mt30">
+                <div class="form-group">
+                    <label for="name" class="control-label">名字</label>
+                    <input type="text" class="form-control" name="name" required placeholder="真实姓名或常用昵称">
+                </div>
+
+
+                <div class="form-group js-register-switch-box">
+                    <div class="mb10">
+                        <label class="radio-inline">
+                            <input type="radio" name="register_type" value="phone" checked> 用手机号注册
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="register_type" value="mail"> 用 Email 注册
+                        </label>
+                    </div>
+                    <div class="js-register-switch-content">
+                        <input type="phone" class="form-control mb15" name="phone" required placeholder="仅支持大陆手机号"
+                               autocomplete="off">
+                        <div class="input-group"><input name="code" type="text"
+                                                        class="form-control js-user-login__phone-code-value"
+                                                        placeholder="短信验证码">
+                            <span class="input-group-btn"><button class="btn btn-default js-user-login__phone-vaild-btn"
+                                                                  style="width:96px;" type="button">获取验证码</button></span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="password" class="control-label">密码</label>
+                    <input type="password" class="form-control" name="password" required placeholder="不少于 6 位">
+                </div>
+                <div class="form-group" style="display:none;">
+                    <label class="required control-label">验证码</label>
+                    <input type="text" class="form-control" id="captcha" name="captcha" placeholder="请输入下方的验证码">
+                    <div class="mt10"><a id="loginReloadCaptcha" href="javascript:void(0)"><img
+                                    data-src="/user/captcha?w=240&h=50" class="captcha" width="240" height="50"/></a>
+                    </div>
+                </div>
+                <div class="form-group clearfix">
+                    <div class="checkbox pull-left">
+                        同意并接受<a href="/tos" target="_blank">《服务条款》</a>
+                    </div>
+                    <button type="submit" class="btn btn-primary pl20 pr20 pull-right"
+                            onclick='ga("send", "event", "email register button", "clicked", "login modal");'>注册
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div style="position: absolute;transform: scale(0.5,0.5) translate(136%,-114%); left: -3px;" class="hidden-xs">
+        <img src="https://static.segmentfault.com/v-59a5362f/global/img/fool/login@2x.png">
+    </div>
+
+    <div class="text-center text-muted mt30">
+    </div>
+</script>
+<script id="bindPhoneModal" type="text/template">
+    <div class="bg-white bindphone-model">
+        <div class="alert alert-warning" role="alert">
+            为了保证账号安全，请先绑定手机
+        </div>
+        <div>
+            <form class="form-horizontal form__bindphone-apply" style="background-color:#fff;padding:0;">
+                <div class="form-group ">
+                    <label for="phoneNumber" class="col-sm-3 control-label required" >手机号码</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control bindphone--phone" id="phoneNumber" name="phone" placeholder="仅只支持大陆手机号">
+                    </div>
+                    <div class="col-sm-3"></div>
+                </div>
+                <div class="form-group">
+                    <label for="authCode" class="col-sm-3 control-label required">验证码</label>
+                    <div class="col-sm-6">
+                        <div class="input-group">
+                            <input type="text" class="form-control bindphone--code" name="code" placeholder="短信验证码">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default user-bind__phone-vaild-btn" type="button">获取验证码</button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3"></div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</script>
+
+
+
+<script>
+    (function (w) {
+        w.SF = {
+            staticUrl: "https://static.segmentfault.com/v-59a5362f"
+        };
+        w.SF.token = (function () {
+    var _y9aj = 'KFc'//'KFc'
++//'zW2'
+'6'+'3'//'8'
++//'j'
+'39'+'3'//'F'
++//'b'
+'df'+'57'//'4'
++''///*'67b'*/'67b'
++'Nou'//'Nou'
++/* 'uv'//'uv' */''+//'UXY'
+'4e6'+//'bX'
+'802'+//'yqa'
+'82'+'0'//'l'
++//'1A'
+'be9'+/* 'QP'//'QP' */''+'ccc'//'FHK'
++/* 'AIZ'//'AIZ' */''+'ac3'//'oR'
++//'4'
+'6a'+//'DG'
+'1d'+'6'//'Y'
+, _hoxnm = [[0,3],[9,12]];
+
+    for (var i = 0; i < _hoxnm.length; i ++) {
+        _y9aj = _y9aj.substring(0, _hoxnm[i][0]) + _y9aj.substring(_hoxnm[i][1]);
+    }
+
+    return _y9aj;
+})();;
+    })(window);
+
+                var lock = {
+        type: "",
+        text: '',
+        table: {"ban_post":[1,"\u4f60\u5df2\u7ecf\u88ab\u7981\u8a00, \u65e0\u6cd5\u8fdb\u884c\u6b64\u64cd\u4f5c, \u5982\u6709\u7591\u4e49\u8bf7\u63d0\u4ea4\u7533\u8bc9, \u6216\u8005\u53d1\u90ae\u4ef6\u5230pr@segmentfault.com"]}
+    };
+</script>
+    <script crossorigin="" src="./git中stash的工作原理是什么？ - SegmentFault_files/assets.js"></script>
+    <script crossorigin="" src="./git中stash的工作原理是什么？ - SegmentFault_files/question.min.js"></script>
+
+
+<script>
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-918487-8']);
+    _gaq.push(['_trackPageview']);
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function () {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+            
+        
+
+                        
+
+    ga('create', 'UA-918487-8', 'auto', {
+        'userID'
+    : 1030000010984382,
+        'createdTime'
+    : 1504370892,
+        'now'
+    : 1504371635 });
+    ga('set', 'dimension1', 'new_registed_visitor');
+    ga('send', 'pageview');
+
+</script>
+
+<script>
+    var _hmt = _hmt || [];
+    (function () {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?e23800c454aa573c0ccb16b52665ac26";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+        <script type="text/javascript" src="./git中stash的工作原理是什么？ - SegmentFault_files/k.js"></script>
+            <ins id="ac_js86_mm_124884735_33830642_120268985" style="display: none;"></ins><script>
+                    ac_keywords_targeting = "git";
+                _acM({
+            aid: "mm_124884735_33830642_120268985",
+            format: 1,
+            mode: 1,
+            gid: 1,
+            destid: "mm_124884735_33830642_120268985",
+            sendkeywords: 1,
+            serverbaseurl: "afpeng.alimama.com/"
+        });
+        </script><script></script><script type="text/javascript" src="./git中stash的工作原理是什么？ - SegmentFault_files/ex" id="ac_js86_$6813906543"></script><div id="noteWidget" class="noteWidget hidden hidden-xs">
+    <div class="noteWidget-header clearfix">
+        <h2 class="h4 pull-left">记笔记</h2>
+        <ul class="list-inline pull-right mb0">
+            <li id="noteWidgetMinimize"><span class="icon-minimize"></span></li><li id="noteWidgetZoom"><span class="icon-zoom"></span></li><li id="noteWidgetClose"><span class="icon-close"></span></li>
+        </ul>
+    </div>
+    <form method="POST" action="https://segmentfault.com/api/notes/add" role="form">
+        <div class="form-group">
+            <label for="title" class="sr-only">标题</label>
+            <input type="hidden" value="" id="draftId">
+            <input type="text" name="title" data-error="" autocomplete="off" class="form-control" placeholder="笔记描述" value="">
+        </div>
+        <div class="editor-config clearfix">
+            <select name="lang" class="form-control pull-left input-sm">
+                <optgroup label="文本语法">
+                    <option value="text" data-mode="text">纯文本</option>
+                    <option value="markdown" data-mode="markdown">Markdown</option>
+                    <option value="javascript" data-mode="javascript">Javascript</option>
+                    <option value="css" data-mode="css">CSS</option>
+                    <option value="html5" data-mode="htmlmixed">HTML</option>
+                    <option value="php" data-mode="php">PHP</option>
+                    <option value="python" data-mode="python">Python</option>
+                    <option value="ruby" data-mode="ruby">Ruby</option>
+                    <option value="go" data-mode="go">Go</option>
+                    <option value="c" data-mode="clike">C/C++</option>
+                    <option value="java" data-mode="java">Java</option>
+                    <option value="bash" data-mode="shell">Shell/Bash</option>
+                </optgroup>
+            </select>
+            <div class="pull-right hidden-xs">
+                <select name="indentWithTabs" class="form-control inline-block input-sm">
+                    <optgroup label="缩进模式">
+                        <option value="false">空格缩进</option>
+                        <option value="true">Tabs 缩进</option>
+                    </optgroup>
+                </select>
+                <select name="tabSize" class="form-control inline-block input-sm">
+                    <optgroup label="缩进大小">
+                        <option value="2">2</option>
+                        <option value="4" selected="">4</option>
+                    </optgroup>
+                </select>
+                <select name="lineWrap" class="form-control inline-block input-sm">
+                    <optgroup label="换行方式">
+                        <option value="true">自动换行</option>
+                        <option value="false">不换行</option>
+                    </optgroup>
+                </select>
+            </div>
+        </div>
+        <textarea id="codeMirror" class="form-control" style="display: none;"></textarea><div class="CodeMirror cm-s-default CodeMirror-wrap"><div style="overflow: hidden; position: relative; width: 3px; height: 0px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" style="position: absolute; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0"></textarea></div><div class="CodeMirror-hscrollbar" style="left: 0px;"><div style="height: 100%; min-height: 1px;"></div></div><div class="CodeMirror-vscrollbar"><div style="min-width: 1px;"></div></div><div class="CodeMirror-scrollbar-filler"></div><div class="CodeMirror-gutter-filler"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px;"><div style="position: relative;"><div class="CodeMirror-lines"><div style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-cursors"></div><div class="CodeMirror-code"></div></div></div></div></div><div style="position: absolute; height: 30px; width: 1px;"></div><div class="CodeMirror-gutters"><div class="CodeMirror-gutter CodeMirror-linenumbers" style="width: 1px;"></div></div></div></div>
+        <div class="mt20 clearfix">
+            <div class="pull-right">
+                <span class="text-muted hidden" id="editorStatus">已保存</span>
+                <a id="dropIt" href="javascript:void(0);" class="mr10 hidden">[舍弃]</a>
+                <button data-type="note" id="publishIt2" class="btn btn-default ml10" data-id="" data-do="add" data-url="" data-text="保存私密笔记" data-name="">保存私密笔记</button>
+                <button data-type="note" id="publishIt" class="btn btn-primary ml10" data-id="" data-do="add" data-url="" data-text="保存公开笔记" data-name="">保存公开笔记</button>
+                </div>
+            </div>
+        </form></div>
+    
+
+            <ins id="ac_js86_mm_124884735_33830642_121788665" style="display: none;"></ins><script>
+                _acM({
+            aid: "mm_124884735_33830642_121788665",
+            format: 1,
+            mode: 1,
+            gid: 1,
+            destid: "mm_124884735_33830642_121788665",
+            sendkeywords: 0,
+            serverbaseurl: "afpeng.alimama.com/"
+        });
+        </script><script></script><script type="text/javascript" src="./git中stash的工作原理是什么？ - SegmentFault_files/ex(1)" id="ac_js86_$7696081830"></script>
+     
+
+
+<iframe id="p_analyse_iframe" src="./git中stash的工作原理是什么？ - SegmentFault_files/saved_resource(1).html" style="display: none;"></iframe><iframe frameborder="0" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" style="display: none;" src="./git中stash的工作原理是什么？ - SegmentFault_files/saved_resource(2).html"></iframe></body></html>
