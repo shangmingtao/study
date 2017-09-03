@@ -171,13 +171,19 @@ git stash list
 git stash clear
 
 *重要*： git stash -u 代表工作区未追踪的也会保存
-            git stash pop —index 代表缓存区的也会恢复
+        git stash pop —index 代表缓存区的也会恢复 如果不加，默认是不会回复缓存区的，缓存区内容会移动到工作区。详见笔记stash本地网页
         git stash apply 不删除stash
 apply和pop均不允许在本地放生改变时执行。必须解决好冲突
 
 
 
 不管是git fetch还是git pull都要求工作区和缓存区不能有东西.需要先保存进度.当用fetch的时候会包远程保存在一个origin/dev的分支中.然后需要切换到dev分支把origin/dev分支merge进来.并且这个origin/dev的分支在本地分支列表中是看不到的.
+
+
+
+当我们需要检出某个版本出来的时候可以通过git branch <新的分支名字> <版本号或者hash>新建分支并检出
+然后git checkout 到新分支名字就ok了
+
 
  
 
