@@ -9,9 +9,13 @@ cloneºÍpullµÄÇø±ğ:cloneµÄÄ¿±êÎÄ¼ş¼Ğ±ØĞëÊÇÒ»¸ö¿ÕÎÄ¼ş¼Ğ,pull²»ÊÇ.Ò»°ãµÚÒ»´Î´ÓÔ¶³Ì²
 
 *ÖØÒª* chone½ö»á°ÑËùÓĞ·ÖÖ§cloneÏÂÀ´,Í¬Ê±»á°ÑËùÓĞtag cloneÏÂÀ´£¬Í¨¹ıgit branch -a²é¿´ËùÓĞ·ÖÖ§£¬¿ÉÒÔ¿´µ½remote/origin/¡£¡£·ÖÖ§¡£Èç¹ûµÚÒ»´ÎcloneÏÂÀ´ÒÔºóÏëÍ¬²½Ô¶³Ì·ÖÖ§£¨·Çmaster£¬master·ÖÖ§ÔÚcloneÊ±ºòÒÑ¾­×Ô¶¯×·×ÙÁË£©Ò²½¨Ò»¸ö±¾µØ·ÖÖ§¡£¿ÉÒÔÍ¨¹ıgit checkoutÏÈ½øµ½´æÔÚ±¾µØµÄÔ¶³Ì·ÖÖ§Àï£¬È»ºógit checkout -b <ĞÂµÄ·ÖÖ§Ãû×Ö> »òÕßÍ¨¹ıgit checkout -b <ĞÂµÄ·ÖÖ§Ãû×Ö> <Ä¿±ê·ÖÖ§Ãû×Ö £¬ Èçorigin/dev>
 
-*ÖØÒª* fetchÕâ¸öÃüÁî¸üĞÂËùÓĞÔ¶³Ì²Ö¿â£¬À­È¡ËùÓĞ±êÇ©
+*ÖØÒª*      fetchÕâ¸öÃüÁî¸üĞÂËùÓĞÔ¶³Ì²Ö¿â£¬À­È¡ËùÓĞ±êÇ©
            fetch <²Ö¿âÃû> ½ö¸üĞÂÕâ¸ö²Ö¿â£¬²»À­È¡±êÇ©
            fetch <²Ö¿âÃû> ¡ªtags ½ö¸üĞÂÕâ¸ö²Ö¿â£¬À­È¡±êÇ©
+1. git fetch            ¡ú¡ú Õâ½«¸üĞÂgit remote ÖĞËùÓĞµÄÔ¶³Ìrepo Ëù°üº¬·ÖÖ§µÄ×îĞÂcommit-id, ½«Æä¼ÇÂ¼µ½.git/FETCH_HEADÎÄ¼şÖĞ
+2. git fetch remote_repo         ¡ú¡ú Õâ½«¸üĞÂÃû³ÆÎªremote_repo µÄÔ¶³ÌrepoÉÏµÄËùÓĞbranchµÄ×îĞÂcommit-id£¬½«Æä¼ÇÂ¼¡£ 
+3. git fetch remote_repo remote_branch_name        ¡ú¡ú Õâ½«Õâ½«¸üĞÂÃû³ÆÎªremote_repo µÄÔ¶³ÌrepoÉÏµÄ·ÖÖ§£º remote_branch_name
+4. git fetch remote_repo remote_branch_name:local_branch_name       ¡ú¡ú Õâ½«Õâ½«¸üĞÂÃû³ÆÎªremote_repo µÄÔ¶³ÌrepoÉÏµÄ·ÖÖ§£º remote_branch_name £¬²¢ÔÚ±¾µØ´´½¨local_branch_name ±¾µØ·ÖÖ§±£´æÔ¶¶Ë·ÖÖ§µÄËùÓĞÊı¾İ¡£
 
 
 
