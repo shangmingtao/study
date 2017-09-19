@@ -17,6 +17,9 @@ cloneºÍpullµÄÇø±ğ:cloneµÄÄ¿±êÎÄ¼ş¼Ğ±ØĞëÊÇÒ»¸ö¿ÕÎÄ¼ş¼Ğ,pull²»ÊÇ.Ò»°ãµÚÒ»´Î´ÓÔ¶³Ì²
 3. git fetch remote_repo remote_branch_name        ¡ú¡ú Õâ½«Õâ½«¸üĞÂÃû³ÆÎªremote_repo µÄÔ¶³ÌrepoÉÏµÄ·ÖÖ§£º remote_branch_name
 4. git fetch remote_repo remote_branch_name:local_branch_name       ¡ú¡ú Õâ½«Õâ½«¸üĞÂÃû³ÆÎªremote_repo µÄÔ¶³ÌrepoÉÏµÄ·ÖÖ§£º remote_branch_name £¬²¢ÔÚ±¾µØ´´½¨local_branch_name ±¾µØ·ÖÖ§±£´æÔ¶¶Ë·ÖÖ§µÄËùÓĞÊı¾İ¡£
 
+ÔÚfetchÖ®ºóÉ¾³ıµôÃ»ÓĞÓëÔ¶³Ì·ÖÖ§¶ÔÓ¦µÄ±¾µØ·ÖÖ§ : git fetch -p
+
+
 
 
 µÚÈı½Ú»Ø¹Ë:
@@ -161,6 +164,8 @@ git·ÖÖ§²Ù×÷£º
 ²é¿´·ÖÖ§ÏêÇé£º git branch -v £¨»á´òÓ¡ÏÖÔÚHEAD£©
 ³åÍ»ÌáÊ¾ £ºCONFLICT (content): Merge conflict in a £¨Ö¤Ã÷³åÍ»ÔÚaÉÏ£©
 ³åÍ»ÌáÊ¾£º»òÕßÎÒÃÇÍ¨¹ıgit status²é¿´ U£¨ºìÉ«£©U£¨ºìÉ«£©
+	
+
 
 Ô¶³Ì:
 »ñÈ¡Ô¶³Ì·ÖÖ§ºÍtagsÁĞ±í:git ls-remote
