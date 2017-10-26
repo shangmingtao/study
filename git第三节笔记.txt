@@ -185,7 +185,7 @@ git stash clear
 *重要*： git stash -u 代表工作区未追踪的也会保存
         git stash pop —index 代表缓存区的也会恢复 如果不加，默认是不会回复缓存区的，缓存区内容会移动到工作区。详见笔记stash本地网页
         git stash apply 不删除stash
-apply和pop均不允许在本地放生改变时执行。必须解决好冲突
+apply和pop均不允许在本地放生改变时执行。必须解决好冲突,而且有一个重要概念，工作区和暂存区是唯一的，不管当前现在那个分支上，所以当在A分支上stash 在B分支上stash pop的话，很有可能和当前工作区和暂存区的内容是冲突的，这时候要解决好冲突。也就是stash pop时候也有可能发生冲突。在A分支shash更改A内容也有可能发生冲突的。
 
 
 
